@@ -1,11 +1,15 @@
 name: 'tasman_dbt_revenuecat'
 version: '0.0.1'
 
-require-dbt-version: [">=1.3.0", "<2.0.0"]
-
 config-version: 2
+require-dbt-version: [">=1.6.0", "<2.0.0"]
+
+profile: 'tasman_dbt_revenuecat'
 
 target-path: "target"
-#clean-targets: ["target", "dbt_modules", "dbt_packages"]
-macro-paths: ["macros"]
+clean-targets: ["target", "dbt_modules", "dbt_packages"]
 log-path: "logs"
+
+models:
+  tasman_dbt_revenuecat:
+    +materialized: table

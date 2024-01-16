@@ -1,0 +1,16 @@
+name: 'tasman_dbt_revenuecat_integration_tests'
+version: '1.0'
+
+config-version: 2
+
+profile: 'tasman_integration_tests'
+
+seed-paths: ["data"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_modules", "dbt_packages"]
+log-path: "logs"
+
+vars:
+  tasman_dbt_revenuecat:
+    revenuecat_table: "seed_mocked_transactions"

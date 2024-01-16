@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "tasman-dbt-revenuecat"
+version = "0.0.1"
+description = "Package to transform RevenueCat data into actionable datasets."
+authors = ["Tasman"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+dbt-snowflake = ">1.6.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

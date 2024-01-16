@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: revenuecat
+    database: "{{ var('revenuecat_database', target.database) }}"
+    schema: "{{ var('revenuecat_schema', target.schema) }}"
+    tables:
+      - name: transactions
+        identifier: "{{ var('revenuecat_table') }}"

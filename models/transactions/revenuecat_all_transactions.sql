@@ -8,7 +8,7 @@ with
 
 source as (
 
-    select * from {{ var('revenuecat_transactions') }}
+    select * from {{ source('revenuecat', 'transactions') }}
 
 ),
 

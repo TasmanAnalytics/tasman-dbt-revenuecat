@@ -14,6 +14,7 @@ final as (
         product_duration,
         min(start_time) as first_subscribed_at,
         max(start_time) as latest_subscribed_at,
+        max(effective_end_time) as latest_effective_end_time,
         array_agg(distinct country_code) as country_codes,
         array_agg(distinct platform) as platforms
 

@@ -37,8 +37,8 @@ flattened_dimensions as (
         flattened_platforms.value::text as platform
     from
         subscription_products,
-        lateral flatten(input => country_code) as flattened_country_codes,
-        lateral flatten(input => platform) as flattened_platforms
+        lateral flatten(input => country_codes) as flattened_country_codes,
+        lateral flatten(input => platforms) as flattened_platforms
 
 ),
 

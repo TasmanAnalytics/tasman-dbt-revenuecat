@@ -60,13 +60,7 @@ subscriptions as (
         platform,
         product_identifier,
         count(distinct case when is_trial_period then store_transaction_id end) as trial_subscription_count,
-        count(distinct case when not (is_trial_period) then store_transaction_id end) as paid_subscription_count,
-        sum(case when is_new_revenue then price_in_usd end) as new_revenue_in_usd,
-        sum(case when not (is_new_revenue) then price_in_usd end) as renewal_revenue_in_usd,
-        sum(price_in_usd) as total_revenue_in_usd,
-        sum(commission_in_usd) as commission_in_usd,
-        sum(estimated_tax_in_usd) as estimated_tax_in_usd,
-        sum(proceeds_in_usd) as proceeds_in_usd
+        count(distinct case when not (is_trial_period) then store_transaction_id end) as paid_subscription_count
 
     from
         date_spine
@@ -76,6 +70,31 @@ subscriptions as (
         on subscription_transactions.effective_end_time::date > date_spine.date_day
         and subscription_transactions.start_time::date <= date_spine.date_day
 
+    group by
+        date_day,
+        country_code,
+        platform,
+        product_identifier
+
+),
+
+revenue as (
+
+    select
+        start_time::date as date_day,
+        country_code,
+        platform,
+        product_identifier,
+        sum(case when is_trial_period then price_in_usd end) as new_revenue_in_usd,
+        sum(case when not (is_trial_period) then price_in_usd end) as renewal_revenue_in_usd,
+        sum(price_in_usd) as total_revenue_in_usd,
+        sum(commission_in_usd) as commission_in_usd,
+        sum(estimated_tax_in_usd) as estimated_tax_in_usd,
+        sum(proceeds_in_usd) as proceeds_in_usd
+    
+    from
+        subscription_transactions
+    
     group by
         date_day,
         country_code,
@@ -95,12 +114,12 @@ final as (
         subscribers.paid_subscriber_count,
         subscriptions.trial_subscription_count,
         subscriptions.paid_subscription_count,
-        subscriptions.new_revenue_in_usd,
-        subscriptions.renewal_revenue_in_usd,
-        subscriptions.total_revenue_in_usd,
-        subscriptions.commission_in_usd,
-        subscriptions.estimated_tax_in_usd,
-        subscriptions.proceeds_in_usd
+        revenue.new_revenue_in_usd,
+        revenue.renewal_revenue_in_usd,
+        revenue.total_revenue_in_usd,
+        revenue.commission_in_usd,
+        revenue.estimated_tax_in_usd,
+        revenue.proceeds_in_usd
 
     from
         subscribers
@@ -111,6 +130,13 @@ final as (
         and subscribers.country_code = subscriptions.country_code
         and subscribers.platform = subscriptions.platform
         and subscribers.product_identifier = subscriptions.product_identifier
+
+    left join
+        revenue
+        on revenue.date_day = subscriptions.date_day
+        and revenue.country_code = subscriptions.country_code
+        and revenue.platform = subscriptions.platform
+        and revenue.product_identifier = subscriptions.product_identifier
 
 )
 

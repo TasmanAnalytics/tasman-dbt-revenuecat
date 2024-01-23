@@ -1,4 +1,4 @@
-with 
+with
 
 {% set get_first_subscription_date %}
     select min(start_time)::date::string from {{ source('revenuecat', 'transactions') }}
@@ -19,13 +19,13 @@ date_spine as (
 
 final as (
 
-	select 
-		date_day,
-		date_trunc(week, date_day) as date_week,
-		date_trunc(month, date_day) as date_month
+    select
+        date_day,
+        date_trunc(week, date_day) as date_week,
+        date_trunc(month, date_day) as date_month
 
-	from 
-		date_spine
+    from
+        date_spine
 
 )
 

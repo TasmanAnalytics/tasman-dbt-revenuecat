@@ -19,7 +19,7 @@ final as (
 
     from
         revenuecat_transactions
-    
+
     group by
         product_identifier,
         product_display_name,

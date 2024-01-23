@@ -1,38 +1,38 @@
 with
 
 subscription_entitlements as (
-    
+
     select * from {{ ref('revenuecat_subscription_entitlements') }}
 
 ),
 
 subscription_activities as (
-    
+
     select * from {{ ref('revenuecat_subscription_activities') }}
 
 ),
 
 subscription_transactions as (
-    
+
     select * from {{ ref('revenuecat_subscription_transactions') }}
 
 ),
 
 subscription_products as (
-    
+
     select * from {{ ref('revenuecat_subscription_products') }}
 
 ),
 
 date_spine as (
-    
+
     select * from {{ ref('date_spine') }}
 
 ),
 
 flattened_dimensions as (
 
-    select 
+    select
         flattened_country_codes.value::text as country_code,
         flattened_platforms.value::text as platform
     from
@@ -105,7 +105,7 @@ daily_new_subscriptions as (
     from
         date_spine_dimensions
 
-    left join 
+    left join
         new_subscribers
         on date_spine_dimensions.date_day = new_subscribers.subscription_started_date
         and date_spine_dimensions.country_code = new_subscribers.country_code
@@ -134,7 +134,7 @@ daily_subscriptions_state as (
     from
         date_spine_dimensions
 
-    left join 
+    left join
         subscription_states
         on date_spine_dimensions.date_day = subscription_states.valid_from::date
         and date_spine_dimensions.country_code = subscription_states.country_code
@@ -166,7 +166,7 @@ final as (
     from
         daily_new_subscriptions
 
-    left join 
+    left join
         daily_subscriptions_state
         on daily_new_subscriptions.date_day = daily_subscriptions_state.date_day
         and daily_new_subscriptions.country_code = daily_subscriptions_state.country_code

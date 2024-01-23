@@ -1,7 +1,7 @@
 with
 
 subscription_activities as (
-    
+
     select * from {{ ref('revenuecat_subscription_activities') }}
 
 ),
@@ -32,8 +32,8 @@ trial_time as (
         subscription_activities
 
     where
-        renewal_number = 1 and 
-        is_trial_period = true
+        renewal_number = 1
+        and is_trial_period = true
 
     group by
         rc_original_app_user_id
@@ -50,8 +50,8 @@ new_paid_time as (
         subscription_activities
 
     where
-        renewal_number = 1 and 
-        is_trial_period = false
+        renewal_number = 1
+        and is_trial_period = false
 
     group by
         rc_original_app_user_id
@@ -68,8 +68,8 @@ conversion_time as (
         subscription_activities
 
     where
-        renewal_number = 2 and 
-        is_trial_conversion = true
+        renewal_number = 2
+        and is_trial_conversion = true
 
     group by
         rc_original_app_user_id
@@ -97,11 +97,11 @@ final as (
         trial_time
         on distinct_users.rc_original_app_user_id = trial_time.rc_original_app_user_id
 
-    left join 
+    left join
         new_paid_time
         on distinct_users.rc_original_app_user_id = new_paid_time.rc_original_app_user_id
 
-    left join 
+    left join
         conversion_time
         on distinct_users.rc_original_app_user_id = conversion_time.rc_original_app_user_id
 

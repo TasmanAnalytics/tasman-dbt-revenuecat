@@ -13,9 +13,9 @@ subscription_transactions as (
 ),
 
 subscription_products as (
-    
+
     select * from {{ ref('revenuecat_subscription_products') }}
-    
+
 ),
 
 date_spine as (
@@ -60,9 +60,9 @@ subscriptions as (
         platform,
         product_identifier,
         count(distinct case when is_trial_period then store_transaction_id end) as trial_subscription_count,
-        count(distinct case when not(is_trial_period) then store_transaction_id end) as paid_subscription_count,
+        count(distinct case when not (is_trial_period) then store_transaction_id end) as paid_subscription_count,
         sum(case when is_new_revenue then price_in_usd end) as new_revenue_in_usd,
-        sum(case when not(is_new_revenue) then price_in_usd end) as renewal_revenue_in_usd,
+        sum(case when not (is_new_revenue) then price_in_usd end) as renewal_revenue_in_usd,
         sum(price_in_usd) as total_revenue_in_usd,
         sum(commission_in_usd) as commission_in_usd,
         sum(estimated_tax_in_usd) as estimated_tax_in_usd,
@@ -70,12 +70,12 @@ subscriptions as (
 
     from
         date_spine
-    
-    left join 
+
+    left join
         subscription_transactions
         on subscription_transactions.effective_end_time::date > date_spine.date_day
         and subscription_transactions.start_time::date <= date_spine.date_day
-    
+
     group by
         date_day,
         country_code,
@@ -86,7 +86,7 @@ subscriptions as (
 
 final as (
 
-    select 
+    select
         coalesce(subscribers.date_day, subscriptions.date_day) as date_day,
         coalesce(subscribers.country_code, subscriptions.country_code) as country_code,
         coalesce(subscribers.platform, subscriptions.platform) as platform,
@@ -101,10 +101,10 @@ final as (
         subscriptions.commission_in_usd,
         subscriptions.estimated_tax_in_usd,
         subscriptions.proceeds_in_usd
-        
-    from 
+
+    from
         subscribers
-    
+
     full outer join
         subscriptions
         on subscribers.date_day = subscriptions.date_day

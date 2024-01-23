@@ -15,11 +15,11 @@ models:
 
       - name: commission_in_purchased_currency
         data_type: float
-        description: ''
+        description: 'The price in the purchased currency multiplied by the percentage of commission set by the store.'
 
       - name: commission_in_usd
         data_type: float
-        description: ''
+        description: 'The price in US dollar multiplied by the percentage of commission set by the store.'
 
       - name: commission_percentage
         data_type: varchar
@@ -27,11 +27,11 @@ models:
 
       - name: country_code
         data_type: varchar
-        description: ''
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
 
       - name: country_source
         data_type: varchar
-        description: ''
+        description: 'The source of the country code. e.g. from_sdk, last_seen.'
 
       - name: custom_subscriber_attributes
         data_type: varchar
@@ -47,11 +47,11 @@ models:
 
       - name: estimated_tax_in_purchased_currency
         data_type: float
-        description: ''
+        description: 'The price in the purchased currency multiplied by the percentage of tax.'
 
       - name: estimated_tax_in_usd
         data_type: float
-        description: ''
+        description: 'The price in US dollars multiplied by the percentage of tax.'
 
       - name: expected_end_time
         data_type: timestamp_ntz
@@ -59,11 +59,12 @@ models:
 
       - name: experiment_id
         data_type: varchar
-        description: ''
+        description: 'The unique ID of the Experiment that the subscriber is or was enrolled in. Will be null if the subscriber has not been enrolled in an experiment.'
 
       - name: experiment_variant
         data_type: varchar
-        description: ''
+        description: 'The value of the Experiment variant that the subscriber is or was enrolled in. a represents the Control, and b represents the Treatment. Will be null if the subscriber has not been
+          enrolled in an experiment.'
 
       - name: grace_period_end_time
         data_type: timestamp_ntz
@@ -75,7 +76,7 @@ models:
 
       - name: is_grace_period
         data_type: boolean
-        description: ''
+        description: 'A boolean flag to show if the subscription is in a grace period or not.'
 
       - name: is_in_intro_offer_period
         data_type: boolean
@@ -83,11 +84,11 @@ models:
 
       - name: is_new_revenue
         data_type: boolean
-        description: ''
+        description: 'A boolean flag to show if the transaction is the first paid transaction for the subscription.'
 
       - name: is_refunded
         data_type: boolean
-        description: ''
+        description: 'A boolean flag to show if the transaction is refunded or not.'
 
       - name: is_sandbox
         data_type: boolean
@@ -107,7 +108,8 @@ models:
 
       - name: ownership_type
         data_type: varchar
-        description: ''
+        description: 'Will be PURCHASED when a recorded transaction results from the subscriber’s direct purchase of it, or FAMILY_SHARED when a recorded transaction results from the subscriber having received
+          it through Family Sharing.'
 
       - name: platform
         data_type: varchar
@@ -193,7 +195,8 @@ models:
 
       - name: takehome_percentage
         data_type: varchar
-        description: ''
+        description: 'The estimated percentage of the transaction price that will be paid out to developers after commissions, but before VAT and DST taxes are taken into account. (will be either 0.7 or
+          0.85)'
 
       - name: tax_percentage
         data_type: varchar

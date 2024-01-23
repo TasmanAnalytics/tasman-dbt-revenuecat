@@ -6,27 +6,27 @@ models:
     columns:
       - name: conversion_timestamp
         data_type: timestamp_ntz
-        description: ''
+        description: 'The timestamp of when the user first converted from a trial to paid.'
 
       - name: country_code
         data_type: varchar
-        description: ''
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
 
       - name: is_new_conversion
         data_type: boolean
-        description: ''
+        description: 'A boolean flag to show if the activity is a conversion from a trial or not.'
 
       - name: is_new_paid
         data_type: boolean
-        description: ''
+        description: 'A boolean flag to show if the activity is a direct paid conversion.'
 
       - name: is_new_trial
         data_type: boolean
-        description: ''
+        description: 'A boolean flag to show if the activity is a trial conversion.'
 
       - name: new_paid_timestamp
         data_type: timestamp_ntz
-        description: ''
+        description: 'The timestamp of when the first paid subscription was purchased.'
 
       - name: platform
         data_type: varchar
@@ -38,12 +38,11 @@ models:
 
       - name: start_timestamp
         data_type: timestamp_ntz
-        description: ''
+        description: 'The timestamp of when the user had its first activity.'
 
       - name: trial_timestamp
         data_type: timestamp_ntz
-        description: ''
-        
+        description: 'The timestamp of when the user had its first trial.'
   - name: daily_subscription_states
     description: 'One row per day, per country, per platform to show the number of subscriptions that entered a certain state on that day.'
     tests:
@@ -91,7 +90,7 @@ models:
 
       - name: country_code
         data_type: varchar
-        description: ''
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
         tests:
           - not_null
 
@@ -123,7 +122,7 @@ models:
 
       - name: country_code
         data_type: varchar
-        description: ''
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
         tests:
           - not_null
 
@@ -151,7 +150,7 @@ models:
 
       - name: paid_subscriber_count
         data_type: number
-        description: ''
+        description: 'The number of paid subscribers in a day, week or month.'
 
       - name: paid_subscription_count
         data_type: number
@@ -203,7 +202,7 @@ models:
 
       - name: trial_subscriber_count
         data_type: number
-        description: ''
+        description: 'The number of trial subscribers in a day, week or month.'
 
       - name: trial_subscription_count
         data_type: number
@@ -220,7 +219,7 @@ models:
     columns:
       - name: country_code
         data_type: varchar
-        description: ''
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
         tests:
           - not_null
 
@@ -252,7 +251,7 @@ models:
     columns:
       - name: country_code
         data_type: varchar
-        description: ''
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
         tests:
           - not_null
 
@@ -294,7 +293,7 @@ models:
     columns:
       - name: country_code
         data_type: varchar
-        description: ''
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
         tests:
           - not_null
 

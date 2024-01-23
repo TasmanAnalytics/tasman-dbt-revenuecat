@@ -33,6 +33,7 @@ date_spine as (
 flattened_dimensions as (
 
     select
+        subscription_products.product_identifier,
         flattened_country_codes.value::text as country_code,
         flattened_platforms.value::text as platform
     from
@@ -46,6 +47,7 @@ date_spine_dimensions as (
 
     select distinct
         date_spine.date_day,
+        flattened_dimensions.product_identifier,
         flattened_dimensions.country_code,
         flattened_dimensions.platform
 
@@ -61,6 +63,7 @@ new_subscribers as (
         activity_timestamp::date as subscription_started_date,
         country_code,
         platform,
+        product_identifier,
         case
             when is_trial_period = true then 'new_trial'
             when renewal_number = 1 and is_trial_period = false then 'new_paid'
@@ -82,6 +85,7 @@ subscription_states as (
         valid_from,
         country_code,
         platform,
+        product_identifier,
         subscription_status
 
     from
@@ -98,6 +102,7 @@ daily_new_subscriptions as (
         date_spine_dimensions.date_day,
         date_spine_dimensions.country_code,
         date_spine_dimensions.platform,
+        date_spine_dimensions.product_identifier,
         sum(case when new_subscribers.subscription_type = 'new_trial' then 1 else 0 end) as count_of_new_trial,
         sum(case when new_subscribers.subscription_type = 'new_paid' then 1 else 0 end) as count_of_new_paid,
         sum(case when new_subscribers.subscription_type = 'converted' then 1 else 0 end) as count_of_converted
@@ -110,11 +115,13 @@ daily_new_subscriptions as (
         on date_spine_dimensions.date_day = new_subscribers.subscription_started_date
         and date_spine_dimensions.country_code = new_subscribers.country_code
         and date_spine_dimensions.platform = new_subscribers.platform
+        and date_spine_dimensions.product_identifier = new_subscribers.product_identifier
 
     group by
         date_spine_dimensions.date_day,
         date_spine_dimensions.country_code,
-        date_spine_dimensions.platform
+        date_spine_dimensions.platform,
+        date_spine_dimensions.product_identifier
 
 ),
 
@@ -124,6 +131,7 @@ daily_subscriptions_state as (
         date_spine_dimensions.date_day,
         date_spine_dimensions.country_code,
         date_spine_dimensions.platform,
+        date_spine_dimensions.product_identifier,
         sum(case when subscription_states.subscription_status = 'crossgrade' then 1 else 0 end) as count_of_crossgrade,
         sum(case when subscription_states.subscription_status = 'downgrade' then 1 else 0 end) as count_of_downgrade,
         sum(case when subscription_states.subscription_status = 'cancelled' then 1 else 0 end) as count_of_cancelled,
@@ -143,7 +151,8 @@ daily_subscriptions_state as (
     group by
         date_spine_dimensions.date_day,
         date_spine_dimensions.country_code,
-        date_spine_dimensions.platform
+        date_spine_dimensions.platform,
+        date_spine_dimensions.product_identifier
 
 ),
 
@@ -153,6 +162,7 @@ final as (
         daily_new_subscriptions.date_day,
         daily_new_subscriptions.country_code,
         daily_new_subscriptions.platform,
+        daily_new_subscriptions.product_identifier,
         daily_new_subscriptions.count_of_new_trial,
         daily_new_subscriptions.count_of_new_paid,
         daily_new_subscriptions.count_of_converted,
@@ -171,6 +181,7 @@ final as (
         on daily_new_subscriptions.date_day = daily_subscriptions_state.date_day
         and daily_new_subscriptions.country_code = daily_subscriptions_state.country_code
         and daily_new_subscriptions.platform = daily_subscriptions_state.platform
+        and daily_new_subscriptions.product_identifier = daily_subscriptions_state.product_identifier
 
 )
 

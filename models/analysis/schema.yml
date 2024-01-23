@@ -43,8 +43,9 @@ models:
       - name: trial_timestamp
         data_type: timestamp_ntz
         description: 'The timestamp of when the user had its first trial.'
+
   - name: daily_subscription_states
-    description: 'One row per day, per country, per platform to show the number of subscriptions that entered a certain state on that day.'
+    description: 'One row per day, per country, per platform and product to show the number of subscriptions that entered a certain state on that day.'
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -107,7 +108,7 @@ models:
           - not_null
 
   - name: daily_subscription_stats
-    description: ''
+    description: 'One row per day, per country, per platform and product to show the number of (active) subscribers, subscriptions and revenue on that day.'
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -209,13 +210,14 @@ models:
         description: 'The number of trial subscriptions in a day, week or month.'
 
   - name: monthly_recurring_revenue
-    description: 'One row per month, per country, per platform to show the monthly recurring revenue.'
+    description: 'One row per month, per country, per platform and product to show the monthly recurring revenue.'
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
             - date_month
             - country_code
             - platform
+            - product_identifier
     columns:
       - name: country_code
         data_type: varchar
@@ -239,8 +241,14 @@ models:
         tests:
           - not_null
 
+      - name: product_identifier
+        data_type: varchar
+        description: 'The product identifier that was purchased.'
+        tests:
+          - not_null
+
   - name: monthly_subscription_stats
-    description: 'One row per month, per country, per platform to show the numbers of active subscriptions on that last day of the month.'
+    description: 'One row per month, per country, per platform and product to show the numbers of active subscriptions on that last day of the month.'
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:
@@ -282,7 +290,7 @@ models:
         description: 'The number of trial subscriptions in a day, week or month.'
 
   - name: weekly_subscription_stats
-    description: 'One row per week, per country, per platform to show the number of active subscriptions at the end of the week.'
+    description: 'One row per week, per country, per platform and product to show the number of active subscriptions at the end of the week.'
     tests:
       - dbt_utils.unique_combination_of_columns:
           combination_of_columns:

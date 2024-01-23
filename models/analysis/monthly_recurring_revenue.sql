@@ -18,6 +18,7 @@ transaction_monthly_revenue as (
         store_transaction_id,
         country_code,
         platform,
+        product_identifier,
         start_time,
         effective_end_time,
         case
@@ -38,6 +39,7 @@ final as (
         date_spine.date_month,
         transaction_monthly_revenue.country_code,
         transaction_monthly_revenue.platform,
+        transaction_monthly_revenue.product_identifier,
         sum(transaction_monthly_revenue.monthly_revenue) as mrr
 
     from
@@ -51,7 +53,8 @@ final as (
     group by
         date_spine.date_month,
         transaction_monthly_revenue.country_code,
-        transaction_monthly_revenue.platform
+        transaction_monthly_revenue.platform,
+        transaction_monthly_revenue.product_identifier
 
 )
 

@@ -1,22 +1,21 @@
-{{
-    config(
-        materialized='table',
-    )
-}}
-
 with
 
 revenuecat_transactions as (
-    select * from {{ ref('revenuecat_all_transactions') }}
+
+    select * from {{ ref('stg_revenuecat_transactions') }}
+
 ),
 
-products_over_time as (
+final as (
+
     select
         product_identifier,
         product_display_name,
         product_duration,
         min(start_time) as first_subscribed_at,
-        max(start_time) as latest_subscribed_at
+        max(start_time) as latest_subscribed_at,
+        array_agg(distinct country_code) as country_codes,
+        array_agg(distinct platform) as platforms
 
     from
         revenuecat_transactions
@@ -25,6 +24,7 @@ products_over_time as (
         product_identifier,
         product_display_name,
         product_duration
+
 )
 
-select * from products_over_time
+select * from final

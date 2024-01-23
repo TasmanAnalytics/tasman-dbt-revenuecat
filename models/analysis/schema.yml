@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: daily_subscription_stats
+    description: ''
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_day
+            - country_code
+            - platform
+            - product_identifier

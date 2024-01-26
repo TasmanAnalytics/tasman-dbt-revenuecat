@@ -34,6 +34,8 @@ flattened_dimensions as (
 
     select
         subscription_products.product_identifier,
+        subscription_products.first_subscribed_at,
+        subscription_products.latest_effective_end_time,
         flattened_country_codes.value::text as country_code,
         flattened_platforms.value::text as platform
     from

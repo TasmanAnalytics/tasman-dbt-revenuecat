@@ -9,6 +9,10 @@ models:
             - store_transaction_id
             - valid_from
     columns:
+      - name: _exported_at
+        data_type: timestamp_ntz
+        description: ''
+
       - name: billing_issues_detected_at
         data_type: timestamp_ntz
         description: 'A timestamp showing when a billing issue occured. Set to `null` if no billing issues occur.'
@@ -69,6 +73,10 @@ models:
       - name: grace_period_end_time
         data_type: timestamp_ntz
         description: 'The expiration time of a grace period. This will be null if the subscriptions does not go into a grace period or the billing issues is solved.'
+
+      - name: id
+        data_type: varchar
+        description: ''
 
       - name: is_auto_renewable
         data_type: boolean
@@ -216,3 +224,20 @@ models:
         data_type: varchar
         description: 'The time that the record is valid to. Used for SCD.'
 
+  - name: date_spine
+    description: ''
+    columns:
+      - name: date_day
+        data_type: timestamp_ntz
+        description: 'The day that the point in time reporting takes place on.'
+        tests:
+          - not_null
+          - unique
+
+      - name: date_month
+        data_type: timestamp_ntz
+        description: 'The month that the point in time reporting takes place in.'
+
+      - name: date_week
+        data_type: timestamp_ntz
+        description: 'The week that the point in time reporting takes place in.'

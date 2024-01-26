@@ -11,6 +11,10 @@ models:
             - activity
     columns:
 
+      - name: _exported_at
+        data_type: timestamp_ntz
+        description: ''
+
       - name: activity
         data_type: varchar
         description: 'An activity that occurs on a subscription. e.g. subscription ends, billing issue detected.'
@@ -71,6 +75,10 @@ models:
         data_type: varchar
         description: 'The value of the Experiment variant that the subscriber is or was enrolled in. a represents the Control, and b represents the Treatment. Will be null if the subscriber has not been
           enrolled in an experiment.'
+
+      - name: id
+        data_type: varchar
+        description: ''
 
       - name: is_auto_renewable
         data_type: boolean
@@ -306,6 +314,10 @@ models:
         data_type: timestamp_ntz
         description: 'The timestamp of when the subscription product was first subscribed to.'
 
+      - name: latest_effective_end_time
+        data_type: timestamp_ntz
+        description: ''
+
       - name: latest_subscribed_at
         data_type: timestamp_ntz
         description: 'The timestamp showing that last time a subscription product was subscribed to.'
@@ -322,9 +334,7 @@ models:
         data_type: varchar
         description: 'The standard duration of the product. e.g. P1M(monthly), P1Y(yearly).'
         tests:
-          - not_null:
-              config:
-                where: is_reported = true
+          - not_null
           - accepted_values:
               values: ['P1Y', 'P1M', 'P1W']
 
@@ -338,6 +348,10 @@ models:
   - name: revenuecat_subscription_transactions
     description: 'One row per transaction. Shows the latest version of each transaction.'
     columns:
+      - name: _exported_at
+        data_type: timestamp_ntz
+        description: ''
+
       - name: billing_issues_detected_at
         data_type: timestamp_ntz
         description: 'A timestamp showing when a billing issue occured. Set to `null` if no billing issues occur.'
@@ -402,6 +416,10 @@ models:
       - name: grace_period_end_time
         data_type: timestamp_ntz
         description: 'The expiration time of a grace period. This will be null if the subscriptions does not go into a grace period or the billing issues is solved.'
+
+      - name: id
+        data_type: varchar
+        description: ''
 
       - name: is_auto_renewable
         data_type: boolean

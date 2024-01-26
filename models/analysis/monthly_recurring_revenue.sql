@@ -21,10 +21,11 @@ transaction_monthly_revenue as (
         product_identifier,
         start_time,
         effective_end_time,
+        -- Documentation for normalizing mrr: https://docs.revenuecat.com/docs/monthly-recurring-revenue-mrr-chart
         case
             when product_duration = 'P1M' then price_in_usd
             when product_duration = 'P1Y' then price_in_usd / 12
-            when product_duration = 'P1W' then price_in_usd * 52 / 12
+            when product_duration = 'P1W' then price_in_usd * 4
             else 0
         end as monthly_revenue
 

@@ -1,14 +1,32 @@
+{{
+  config(
+    materialized = 'incremental',
+    unique_key = 'id',
+    )
+}}
+
 with
 
 source as (
 
     select * from {{ source('revenuecat', 'transactions') }}
+    {% if is_incremental() %}
+    where regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz >= (select max(_exported_at) from {{ this }})
+    {% endif %}
+
+),
+
+deduplicate as (
+
+    select * from source
+    qualify row_number() over (partition by store_transaction_id, updated_at order by regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz desc) = 1
 
 ),
 
 renamed as (
 
     select
+        {{ dbt_utils.generate_surrogate_key(['store_transaction_id', 'updated_at'])}} as id,
         rc_original_app_user_id,
         rc_last_seen_app_user_id_alias,
         country as country_code,
@@ -66,9 +84,11 @@ renamed as (
         --auto_resume_time,
 
         updated_at as valid_from,
-        lead(updated_at) over (partition by store_transaction_id order by updated_at) as valid_to
+        lead(updated_at) over (partition by store_transaction_id order by updated_at) as valid_to,
 
-    from source
+        regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz as _exported_at
+
+    from deduplicate
 
 )
 

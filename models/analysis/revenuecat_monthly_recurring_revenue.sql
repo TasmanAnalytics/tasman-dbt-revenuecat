@@ -2,7 +2,8 @@ with
 
 subscription_transactions as (
 
-    select * from {{ ref('revenuecat_subscription_transactions') }}
+    select * from {{ ref('stg_revenuecat_transactions') }}
+    where valid_to is null
 
 ),
 
@@ -21,13 +22,7 @@ transaction_monthly_revenue as (
         product_identifier,
         start_time,
         effective_end_time,
-        -- Documentation for normalizing mrr: https://docs.revenuecat.com/docs/monthly-recurring-revenue-mrr-chart
-        case
-            when product_duration = 'P1M' then price_in_usd
-            when product_duration = 'P1Y' then price_in_usd / 12
-            when product_duration = 'P1W' then price_in_usd * 4
-            else 0
-        end as monthly_revenue
+        mrr_usd
 
     from
         subscription_transactions
@@ -41,15 +36,15 @@ final as (
         transaction_monthly_revenue.country_code,
         transaction_monthly_revenue.platform,
         transaction_monthly_revenue.product_identifier,
-        sum(transaction_monthly_revenue.monthly_revenue) as mrr
+        sum(transaction_monthly_revenue.mrr_usd) as mrr_usd
 
     from
         date_spine
 
     left join
         transaction_monthly_revenue
-        on last_day(date_spine.date_month, month) >= transaction_monthly_revenue.start_time::date
-        and last_day(date_spine.date_month, month) < transaction_monthly_revenue.effective_end_time::date
+        on date_spine.date_month >= transaction_monthly_revenue.start_time::date
+        and last_day(date_spine.date_month, month) <= last_day(transaction_monthly_revenue.effective_end_time::date, month)
 
     group by
         date_spine.date_month,

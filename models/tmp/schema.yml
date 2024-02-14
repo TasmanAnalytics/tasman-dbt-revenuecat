@@ -47,7 +47,7 @@ models:
 
       - name: entitlement_identifiers
         data_type: varchar
-        description: 'An array of entitlements that the subscription has unlocked for the user. e.g. meal planning.'
+        description: 'An array of entitlements that the subscription has unlocked for the user.'
 
       - name: estimated_tax_in_purchased_currency
         data_type: float

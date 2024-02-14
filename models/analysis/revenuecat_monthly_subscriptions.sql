@@ -2,20 +2,21 @@ with
 
 subscription_transactions as (
 
-    select * from {{ ref('revenuecat_subscription_transactions') }}
+    select * from {{ ref('stg_revenuecat_transactions') }}
+    where valid_to is null
 
 ),
 
 date_spine as (
 
-    select * from {{ ref('date_spine') }}
+    select distinct date_month from {{ ref('date_spine') }}
 
 ),
 
 final as (
 
     select
-        date_spine.date_day,
+        date_spine.date_month,
         country_code,
         platform,
         product_identifier,
@@ -27,11 +28,11 @@ final as (
 
     left join
         subscription_transactions
-        on subscription_transactions.effective_end_time::date > date_spine.date_day
-        and subscription_transactions.start_time::date <= date_spine.date_day
+        on last_day(date_spine.date_month, month) >= subscription_transactions.start_time::date
+        and last_day(date_spine.date_month, month) < subscription_transactions.effective_end_time::date
 
     group by
-        date_day,
+        date_month,
         country_code,
         platform,
         product_identifier

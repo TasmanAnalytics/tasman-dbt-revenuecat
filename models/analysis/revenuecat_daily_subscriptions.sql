@@ -2,20 +2,21 @@ with
 
 subscription_transactions as (
 
-    select * from {{ ref('revenuecat_subscription_transactions') }}
+    select * from {{ ref('stg_revenuecat_transactions') }}
+    where store != 'promotional' and valid_to is null
 
 ),
 
 date_spine as (
 
-    select distinct date_week from {{ ref('date_spine') }}
+    select * from {{ ref('date_spine') }}
 
 ),
 
 final as (
 
     select
-        date_spine.date_week,
+        date_spine.date_day,
         country_code,
         platform,
         product_identifier,
@@ -27,11 +28,11 @@ final as (
 
     left join
         subscription_transactions
-        on date_spine.date_week >= subscription_transactions.start_time::date
-        and date_spine.date_week < subscription_transactions.effective_end_time::date
+        on subscription_transactions.effective_end_time::date > date_spine.date_day
+        and subscription_transactions.start_time::date <= date_spine.date_day
 
     group by
-        date_week,
+        date_day,
         country_code,
         platform,
         product_identifier

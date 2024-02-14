@@ -10,8 +10,12 @@ with
 source as (
 
     select * from {{ source('revenuecat', 'transactions') }}
+    where 1=1
+    {% if var('revenuecat_filter') %}
+    and {{ var('revenuecat_filter') }}
+    {% endif %}
     {% if is_incremental() %}
-    where regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz >= (select max(_exported_at) from {{ this }})
+    and regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz >= (select max(_exported_at) from {{ this }})
     {% endif %}
 
 ),
@@ -38,26 +42,40 @@ renamed as (
         is_trial_period::boolean as is_trial_period,
         is_in_intro_offer_period::boolean as is_in_intro_offer_period,
         is_sandbox::boolean as is_sandbox,
+
         price_in_usd,
         price_in_usd * commission_percentage as commission_in_usd,
         price_in_usd * tax_percentage as estimated_tax_in_usd,
         price_in_usd - commission_in_usd - estimated_tax_in_usd as proceeds_in_usd,
+        -- Documentation for normalizing mrr_usd: https://docs.revenuecat.com/docs/monthly-recurring-revenue-mrr_usd-chart
+        case
+            when product_duration = 'P1M' then price_in_usd
+            when product_duration = 'P1Y' then price_in_usd / 12
+            when product_duration = 'P1W' then price_in_usd * 4
+            else 0
+        end as mrr_usd,
         takehome_percentage,
+
         store_transaction_id,
         original_store_transaction_id,
+
         refunded_at::timestamp_ntz as refunded_at,
         refunded_at is not null as is_refunded,
+
         unsubscribe_detected_at::timestamp_ntz as unsubscribe_detected_at,
         billing_issues_detected_at::timestamp_ntz as billing_issues_detected_at,
+
         purchased_currency,
         price_in_purchased_currency,
         price_in_purchased_currency * commission_percentage as commission_in_purchased_currency,
         price_in_purchased_currency * tax_percentage as estimated_tax_in_purchased_currency,
         price_in_purchased_currency - commission_in_purchased_currency - estimated_tax_in_purchased_currency as proceeds_in_purchased_currency,
+        
         entitlement_identifiers,
         renewal_number,
         is_trial_conversion::boolean as is_trial_conversion,
         store_transaction_id = original_store_transaction_id or is_trial_conversion::boolean as is_new_revenue,
+        
         presented_offering,
         reserved_subscriber_attributes,
         custom_subscriber_attributes,
@@ -83,9 +101,14 @@ renamed as (
         --first_seen_time,
         --auto_resume_time,
 
+        {%- if var('revenuecat_custom_subscriber_attributes') %}
+            {%- for key, value in var('revenuecat_custom_subscriber_attributes').items() %}
+            parse_json(custom_subscriber_attributes):{{ key }} as {{ value }},
+            {%- endfor %}
+        {%- endif %}
+
         updated_at as valid_from,
         lead(updated_at) over (partition by store_transaction_id order by updated_at) as valid_to,
-
         regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz as _exported_at
 
     from deduplicate

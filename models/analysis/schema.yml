@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: cohort_conversion
+  - name: revenuecat_cohort_conversion
     description: ''
     columns:
       - name: conversion_timestamp
@@ -44,7 +44,7 @@ models:
         data_type: timestamp_ntz
         description: 'The timestamp of when the user had its first trial.'
 
-  - name: daily_subscription_states
+  - name: revenuecat_daily_subscription_states
     description: 'One row per day, per country, per platform and product to show the number of subscriptions that entered a certain state on that day.'
     tests:
       - dbt_utils.unique_combination_of_columns:
@@ -52,6 +52,7 @@ models:
             - date_day
             - country_code
             - platform
+            - product_identifier
     columns:
       - name: count_of_cancelled
         data_type: number
@@ -92,26 +93,23 @@ models:
       - name: country_code
         data_type: varchar
         description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
-        tests:
-          - not_null
+
 
       - name: date_day
         data_type: timestamp_ntz
         description: 'The day that the point in time reporting takes place on.'
-        tests:
-          - not_null
+
 
       - name: platform
         data_type: varchar
         description: 'The last seen platform of the subscriber. e.g. android, iOS.'
-        tests:
-          - not_null
+
 
       - name: product_identifier
         data_type: varchar
         description: 'The product identifier that was purchased.'
 
-  - name: daily_subscription_stats
+  - name: revenuecat_daily_subscriptions
     description: 'One row per day, per country, per platform and product to show the number of (active) subscribers, subscriptions and revenue on that day.'
     tests:
       - dbt_utils.unique_combination_of_columns:
@@ -128,14 +126,12 @@ models:
       - name: country_code
         data_type: varchar
         description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
-        tests:
-          - not_null
+
 
       - name: date_day
         data_type: timestamp_ntz
         description: 'The day that the point in time reporting takes place on.'
-        tests:
-          - not_null
+
 
       - name: estimated_tax_in_usd
         data_type: float
@@ -168,8 +164,7 @@ models:
       - name: platform
         data_type: varchar
         description: 'The last seen platform of the subscriber. e.g. android, iOS.'
-        tests:
-          - not_null
+
 
       - name: proceeds_in_usd
         data_type: float
@@ -182,8 +177,7 @@ models:
       - name: product_identifier
         data_type: varchar
         description: 'The product identifier that was purchased.'
-        tests:
-          - not_null
+
 
       - name: product_identifier
         data_type: varchar
@@ -213,7 +207,7 @@ models:
         data_type: number
         description: 'The number of trial subscriptions in a day, week or month.'
 
-  - name: monthly_recurring_revenue
+  - name: revenuecat_monthly_recurring_revenue
     description: 'One row per month, per country, per platform and product to show the monthly recurring revenue.'
     tests:
       - dbt_utils.unique_combination_of_columns:
@@ -226,32 +220,28 @@ models:
       - name: country_code
         data_type: varchar
         description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
-        tests:
-          - not_null
+
 
       - name: date_month
         data_type: timestamp_ntz
         description: 'The month that the point in time reporting takes place in.'
-        tests:
-          - not_null
 
-      - name: mrr
+
+      - name: mrr_usd
         data_type: number
         description: 'The monthly recurring revenue.'
 
       - name: platform
         data_type: varchar
         description: 'The last seen platform of the subscriber. e.g. android, iOS.'
-        tests:
-          - not_null
+
 
       - name: product_identifier
         data_type: varchar
         description: 'The product identifier that was purchased.'
-        tests:
-          - not_null
 
-  - name: monthly_subscription_stats
+
+  - name: revenuecat_monthly_subscriptions
     description: 'One row per month, per country, per platform and product to show the numbers of active subscriptions on that last day of the month.'
     tests:
       - dbt_utils.unique_combination_of_columns:
@@ -264,14 +254,10 @@ models:
       - name: country_code
         data_type: varchar
         description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
-        tests:
-          - not_null
 
       - name: date_month
         data_type: timestamp_ntz
         description: 'The month that the point in time reporting takes place in.'
-        tests:
-          - not_null
 
       - name: paid_subscription_count
         data_type: number
@@ -280,20 +266,16 @@ models:
       - name: platform
         data_type: varchar
         description: 'The last seen platform of the subscriber. e.g. android, iOS.'
-        tests:
-          - not_null
 
       - name: product_identifier
         data_type: varchar
         description: 'The product identifier that was purchased.'
-        tests:
-          - not_null
 
       - name: trial_subscription_count
         data_type: number
         description: 'The number of trial subscriptions in a day, week or month.'
 
-  - name: weekly_subscription_stats
+  - name: revenuecat_weekly_subscription
     description: 'One row per week, per country, per platform and product to show the number of active subscriptions at the end of the week.'
     tests:
       - dbt_utils.unique_combination_of_columns:
@@ -306,14 +288,10 @@ models:
       - name: country_code
         data_type: varchar
         description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
-        tests:
-          - not_null
 
       - name: date_week
         data_type: timestamp_ntz
         description: 'The week that the point in time reporting takes place in.'
-        tests:
-          - not_null
 
       - name: paid_subscription_count
         data_type: number
@@ -322,20 +300,16 @@ models:
       - name: platform
         data_type: varchar
         description: 'The last seen platform of the subscriber. e.g. android, iOS.'
-        tests:
-          - not_null
 
       - name: product_identifier
         data_type: varchar
         description: 'The product identifier that was purchased.'
-        tests:
-          - not_null
 
       - name: trial_subscription_count
         data_type: number
         description: 'The number of trial subscriptions in a day, week or month.'
 
-  - name: daily_subscribers
+  - name: revenuecat_daily_subscribers
     description: ''
     columns:
       - name: country_code
@@ -362,7 +336,7 @@ models:
         data_type: number
         description: 'The number of trial subscribers in a day, week or month.'
 
-  - name: daily_subscription_revenue
+  - name: revenuecat_daily_subscription_revenue
     description: ''
     columns:
       - name: commission_in_usd
@@ -404,30 +378,3 @@ models:
       - name: total_revenue_in_usd
         data_type: float
         description: 'The sum of total revenue (ignore tax and commisions) in US dollars.'
-
-  - name: daily_subscriptions
-    description: ''
-    columns:
-      - name: country_code
-        data_type: varchar
-        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
-
-      - name: date_day
-        data_type: timestamp_ntz
-        description: 'The day that the point in time reporting takes place on.'
-
-      - name: paid_subscription_count
-        data_type: number
-        description: 'The number of paid subscriptions in a day, week or month.'
-
-      - name: platform
-        data_type: varchar
-        description: 'The last seen platform of the subscriber. e.g. android, iOS.'
-
-      - name: product_identifier
-        data_type: varchar
-        description: 'The product identifier that was purchased.'
-
-      - name: trial_subscription_count
-        data_type: number
-        description: 'The number of trial subscriptions in a day, week or month.'

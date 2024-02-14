@@ -227,7 +227,7 @@ models:
         description: 'The month that the point in time reporting takes place in.'
 
 
-      - name: mrr_usd
+      - name: mrr_in_usd
         data_type: number
         description: 'The monthly recurring revenue.'
 

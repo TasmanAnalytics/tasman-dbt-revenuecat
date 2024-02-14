@@ -47,13 +47,13 @@ renamed as (
         price_in_usd * commission_percentage as commission_in_usd,
         price_in_usd * tax_percentage as estimated_tax_in_usd,
         price_in_usd - commission_in_usd - estimated_tax_in_usd as proceeds_in_usd,
-        -- Documentation for normalizing mrr_usd: https://docs.revenuecat.com/docs/monthly-recurring-revenue-mrr_usd-chart
+        -- Documentation for normalizing mrr_in_usd: https://docs.revenuecat.com/docs/monthly-recurring-revenue-mrr_in_usd-chart
         case
             when product_duration = 'P1M' then price_in_usd
             when product_duration = 'P1Y' then price_in_usd / 12
             when product_duration = 'P1W' then price_in_usd * 4
             else 0
-        end as mrr_usd,
+        end as mrr_in_usd,
         takehome_percentage,
 
         store_transaction_id,

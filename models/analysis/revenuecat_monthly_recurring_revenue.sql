@@ -22,7 +22,7 @@ transaction_monthly_revenue as (
         product_identifier,
         start_time,
         effective_end_time,
-        mrr_usd
+        mrr_in_usd
 
     from
         subscription_transactions
@@ -36,7 +36,7 @@ final as (
         transaction_monthly_revenue.country_code,
         transaction_monthly_revenue.platform,
         transaction_monthly_revenue.product_identifier,
-        sum(transaction_monthly_revenue.mrr_usd) as mrr_usd
+        sum(transaction_monthly_revenue.mrr_in_usd) as mrr_in_usd
 
     from
         date_spine

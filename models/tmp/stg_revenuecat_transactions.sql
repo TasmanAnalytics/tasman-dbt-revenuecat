@@ -15,7 +15,7 @@ source as (
     and {{ var('revenuecat_filter') }}
     {% endif %}
     {% if is_incremental() %}
-    and regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz >= (select max(_exported_at) from {{ this }})
+    and regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz > (select max(_exported_at) from {{ this }})
     {% endif %}
 
 ),

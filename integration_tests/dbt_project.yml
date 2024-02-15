@@ -16,6 +16,7 @@ vars:
     revenuecat_table: "SEED_REVENUECAT_TRANSACTIONS_MOCKED"
     revenuecat_filter: "is_sandbox = false"
     revenuecat_custom_subscriber_attributes: ""
+    revenuecat_mrr_test_seed: ""
 
 seeds:
   tasman_dbt_revenuecat_integration_tests:

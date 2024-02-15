@@ -221,20 +221,25 @@ models:
         data_type: varchar
         description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
 
-
       - name: date_month
         data_type: timestamp_ntz
         description: 'The month that the point in time reporting takes place in.'
 
-
       - name: mrr_in_usd
         data_type: number
         description: 'The monthly recurring revenue.'
+        tests:
+          - test_compare_to_source:
+              enabled: "{{ true if var('revenuecat_mrr_test_seed') != '' else false }}"
+              date_field: date_month
+              source_model: "{{ var('revenuecat_mrr_test_seed') }}"
+              source_date: report_date
+              source_metric: mrr
+              percent_mismatch_threshold: 0.1
 
       - name: platform
         data_type: varchar
         description: 'The last seen platform of the subscriber. e.g. android, iOS.'
-
 
       - name: product_identifier
         data_type: varchar

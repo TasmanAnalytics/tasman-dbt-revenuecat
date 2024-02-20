@@ -55,7 +55,7 @@ jobs:
           poetry run dbt debug --target snowflake-ci
 
       - name: dbt seed on Snowflake
-        id: dbt-build-snowflake
+        id: dbt-seed-snowflake
         run: |
           poetry run dbt seed --target snowflake-ci
 

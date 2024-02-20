@@ -85,7 +85,7 @@ previous_states as (
 
 ),
 
-final as (
+subscription_statuses as (
 
     select
         *,
@@ -102,6 +102,14 @@ final as (
         renewal_number,
         valid_from
 
+),
+
+final as (
+    select
+        {{ tasman_dbt_revenuecat.generate_surrogate_key(['store_transaction_id', 'subscription_status', 'valid_from'])}} as entitlement_row_id,
+        *
+    from
+        subscription_statuses
 )
 
 select * from final

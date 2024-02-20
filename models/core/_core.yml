@@ -231,7 +231,7 @@ models:
     columns:
       - name: activity_row_id
         data_type: string
-        description: 'Unique identifier derived from combination of transaction ID and updated at timestamp'
+        description: 'Unique identifier derived from combination of transaction ID, activity and activity timestamp.'
         tests:
           - unique
           - not_null
@@ -439,13 +439,14 @@ models:
 
   - name: revenuecat_subscription_entitlements
     description: 'One row per transactions per state change. Creates a SCD table to show state changes of transactions allowing us to see point in time transaction states.'
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - store_transaction_id
-            - subscription_status
-            - valid_from
     columns:
+      - name: entitlement_row_id
+        data_type: string
+        description: 'Unique identifier derived from combination of transaction ID, suscription status and valid from timestamp.'
+        tests:
+          - unique
+          - not_null
+
       - name: activity
         data_type: varchar
         description: 'An activity that occurs on a subscription. e.g. subscription ends, billing issue detected.'

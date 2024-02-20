@@ -1,8 +1,8 @@
 version: 2
 
 models:
-  - name: date_spine
-    description: ''
+  - name: revenuecat_date_spine
+    description: 'A table of dates of days, week starts and month starts from the first transaction date, used to create analysis tables'
     columns:
       - name: date_day
         data_type: timestamp_ntz

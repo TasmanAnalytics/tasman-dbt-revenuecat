@@ -7,6 +7,12 @@
 # RevenueCat
 This packages aims to transform the [RevenueCat](https://www.revenuecat.com/) data to cookiecutter datasets ready for analysis. This package does require to have the [RevenueCat scheduled data exports](https://www.revenuecat.com/docs/integrations/scheduled-data-exports) enabled and loaded into Snowflake.
 
+**Key Features:**
+- 🔥 Accurate deduplication of RevenueCat transaction data
+- 🎉 Transformed core model set for transactions, activities, entitlements and products.
+- 🏃 Out-of-the-box analysis models that align with RevenueCat's UI reporting logic.
+
+
 ## Configurations
 To get started specify the location of the table in Snowflake by setting the variables `revenuecat_database`, `revenuecat_schema` and `revenuecat_table`. Optionally, it is possible to apply a filter by passing the `revenuecat_filter` variable. Common practice is to filter the sandbox transactions out of the analysis data. To parse the custom subscriber attributes specify the `revenuecat_custom_subscriber_attributes` dictionary with key, value pairs for the values to parse and the column names to provide it.
 

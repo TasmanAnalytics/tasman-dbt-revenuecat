@@ -1,23 +1,17 @@
-{{
-    config(
-        materialized='table',
-    )
-}}
-
 with
 
 subscription_transactions as (
-    select * from {{ ref('revenuecat_latest_transactions') }}
+
+    select * from {{ ref('stg_revenuecat_transactions') }} where valid_to is null
+
 ),
 
 unpivoted_transactions as (
-    select
-        *
-    from
-        subscription_transactions
 
--- the order of this unpivot is important. Where there is no gap between, the events are selected in order of priority.
-    unpivot(activity_timestamp for timestamp_type in (
+    select * from subscription_transactions
+
+    -- the order of this unpivot is important. Where there is no gap between, the events are selected in order of priority.
+    unpivot (activity_timestamp for timestamp_type in (
         start_time,
         refunded_at,
         unsubscribe_detected_at,
@@ -25,11 +19,13 @@ unpivoted_transactions as (
         grace_period_end_time,
         effective_end_time
     ))
+
 ),
 
-activity_mapping as (
+final as (
+
     select
-        * exclude timestamp_type,
+        * exclude (timestamp_type),
         case
             when lower(timestamp_type) = 'start_time' then 'subscription_started'
             when lower(timestamp_type) = 'refunded_at' then 'subscription_refunded'
@@ -39,10 +35,10 @@ activity_mapping as (
             when lower(timestamp_type) = 'effective_end_time' then 'subscription_ended'
             else timestamp_type
         end as activity
-    
+
     from
         unpivoted_transactions
+
 )
 
-select * from activity_mapping
-    
+select * from final

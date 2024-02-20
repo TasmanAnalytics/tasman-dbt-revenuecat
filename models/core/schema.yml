@@ -1,0 +1,345 @@
+version: 2
+
+models:
+  - name: revenuecat_subscription_activities
+    description: 'One row per transaction, per activity. Pivots the transactions table to create an event stream of when transactions change.'
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - store_transaction_id
+            - activity_timestamp
+            - activity
+    columns:
+
+      - name: _exported_at
+        data_type: timestamp_ntz
+        description: ''
+
+      - name: activity
+        data_type: varchar
+        description: 'An activity that occurs on a subscription. e.g. subscription ends, billing issue detected.'
+        tests:
+          - not_null
+
+      - name: activity_timestamp
+        data_type: timestamp_ntz
+        description: 'The timestamp in which the activity takes place.'
+        tests:
+          - not_null
+
+      - name: commission_in_purchased_currency
+        data_type: float
+        description: 'The price in the purchased currency multiplied by the percentage of commission set by the store.'
+
+      - name: commission_in_usd
+        data_type: float
+        description: 'The price in US dollar multiplied by the percentage of commission set by the store.'
+
+      - name: commission_percentage
+        data_type: varchar
+        description: 'The portion of a transactions price that will be detected by the store for commission.'
+
+      - name: country_code
+        data_type: varchar
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
+
+      - name: country_source
+        data_type: varchar
+        description: 'The source of the country code. e.g. from_sdk, last_seen.'
+
+      - name: custom_subscriber_attributes
+        data_type: varchar
+        description: 'An array which holds custom attributes for the subscriber.'
+
+      - name: entitlement_identifiers
+        data_type: varchar
+        description: 'An array of entitlements that the subscription has unlocked for the user.'
+
+      - name: estimated_tax_in_purchased_currency
+        data_type: float
+        description: 'The price in the purchased currency multiplied by the percentage of tax.'
+
+      - name: estimated_tax_in_usd
+        data_type: float
+        description: 'The price in US dollars multiplied by the percentage of tax.'
+
+      - name: expected_end_time
+        data_type: timestamp_ntz
+        description: 'The timestamp of when the subscription is expected to end. This does not take refunds and grace periods into account.'
+
+      - name: experiment_id
+        data_type: varchar
+        description: 'The unique ID of the Experiment that the subscriber is or was enrolled in. Will be null if the subscriber has not been enrolled in an experiment.'
+
+      - name: experiment_variant
+        data_type: varchar
+        description: 'The value of the Experiment variant that the subscriber is or was enrolled in. a represents the Control, and b represents the Treatment. Will be null if the subscriber has not been
+          enrolled in an experiment.'
+
+      - name: id
+        data_type: varchar
+        description: ''
+
+      - name: is_auto_renewable
+        data_type: boolean
+        description: 'A boolean flag to show if the subscription is auto renewable or not.'
+
+      - name: is_grace_period
+        data_type: boolean
+        description: 'A boolean flag to show if the subscription is in a grace period or not.'
+
+      - name: is_in_intro_offer_period
+        data_type: boolean
+        description: 'A boolean flag to show if the transaction is in an introductory offer period or not.'
+
+      - name: is_new_revenue
+        data_type: boolean
+        description: 'A boolean flag to show if the transaction is the first paid transaction for the subscription.'
+
+      - name: is_refunded
+        data_type: boolean
+        description: 'A boolean flag to show if the transaction is refunded or not.'
+
+      - name: is_sandbox
+        data_type: boolean
+        description: 'A boolean flag to show whether the transaction was made in a sandbox environment. Sandbox transactions are filtered out.'
+
+      - name: is_trial_conversion
+        data_type: boolean
+        description: 'A boolean flag to show whether the transaction is a conversion from a trial or not.'
+
+      - name: is_trial_period
+        data_type: boolean
+        description: 'A boolean flag to show whether the transaction is a trial or not.'
+
+      - name: original_store_transaction_id
+        data_type: varchar
+        description: 'The order ID of the first transaction. This can be used to find all transactions that are part of the same subscription/entitlement period.'
+
+      - name: ownership_type
+        data_type: varchar
+        description: 'Will be PURCHASED when a recorded transaction results from the subscriber’s direct purchase of it, or FAMILY_SHARED when a recorded transaction results from the subscriber having received
+          it through Family Sharing.'
+
+      - name: platform
+        data_type: varchar
+        description: 'The last seen platform of the subscriber. e.g. android, iOS.'
+
+      - name: presented_offering
+        data_type: varchar
+        description: 'The offering presented to users.'
+
+      - name: price_in_purchased_currency
+        data_type: varchar
+        description: 'The revenue in the purhcased currency. This will be set to 0 if the transaction is refunded.'
+
+      - name: price_in_usd
+        data_type: varchar
+        description: 'The revenue in USD. This will be set to 0 if the transaction is refunded.'
+
+      - name: proceeds_in_purchased_currency
+        data_type: float
+        description: 'The revenue caluculated from the price of the subscription, taking tax and store comission into account.'
+
+      - name: proceeds_in_usd
+        data_type: float
+        description: 'The revenue caluculated from the price of the subscription, taking tax and store comission into account.'
+
+      - name: product_display_name
+        data_type: varchar
+        description: 'The display name of the product identifier if one has been set.'
+
+      - name: product_duration
+        data_type: varchar
+        description: 'The standard duration of the product. e.g. P1M(monthly), P1Y(yearly).'
+
+      - name: product_identifier
+        data_type: varchar
+        description: 'The product identifier that was purchased.'
+
+      - name: purchase_price_in_purchased_currency
+        data_type: varchar
+        description: 'The amount that the subscription was purchased for. This does not get set to 0 if the transaction is refunded.'
+
+      - name: purchase_price_in_usd
+        data_type: varchar
+        description: 'The amount that the subscription was purchased for. This does not get set to 0 if the transaction is refunded.'
+
+      - name: purchased_currency
+        data_type: varchar
+        description: 'The currency that was used for the transaction.'
+
+      - name: rc_last_seen_app_user_id_alias
+        data_type: varchar
+        description: 'The most recent ID linked to the user purchasing the transaction. This can be used to link to user account.'
+
+      - name: rc_original_app_user_id
+        data_type: varchar
+        description: 'A unique user identifier to find all of a users transactions.'
+
+      - name: renewal_number
+        data_type: varchar
+        description: 'An incrementing number to show how many times the subscription has been renewed. This resets on reactivation.'
+
+      - name: reserved_subscriber_attributes
+        data_type: varchar
+        description: 'An array to hold extra subscriber attributes.'
+
+      - name: store
+        data_type: varchar
+        description: 'The source of the transaction. e.g. app_store, play_store.'
+
+      - name: store_transaction_id
+        data_type: varchar
+        description: 'The unique order ID for the transaction.'
+        tests:
+          - not_null
+
+      - name: takehome_percentage
+        data_type: varchar
+        description: 'The estimated percentage of the transaction price that will be paid out to developers after commissions, but before VAT and DST taxes are taken into account. (will be either 0.7 or
+          0.85)'
+
+      - name: tax_percentage
+        data_type: varchar
+        description: 'The portion of a transactions price that will be deducted by the store for taxes.'
+
+      - name: valid_from
+        data_type: varchar
+        description: 'The time that the record is valid from. Used for SCD.'
+
+      - name: valid_to
+        data_type: varchar
+        description: 'The time that the record is valid to. Used for SCD.'
+
+  - name: revenuecat_subscription_entitlements
+    description: 'One row per transactions per state change. Creates a SCD table to show state changes of transactions allowing us to see point in time transaction states.'
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - store_transaction_id
+            - subscription_status
+            - valid_from
+    columns:
+      - name: activity
+        data_type: varchar
+        description: 'An activity that occurs on a subscription. e.g. subscription ends, billing issue detected.'
+        tests:
+          - not_null
+
+      - name: country_code
+        data_type: varchar
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
+
+      - name: is_product_changed
+        data_type: boolean
+        description: 'A boolean flag to show if the activity is a product change.'
+
+      - name: is_trial_conversion
+        data_type: boolean
+        description: 'A boolean flag to show whether the transaction is a conversion from a trial or not.'
+
+      - name: is_trial_period
+        data_type: boolean
+        description: 'A boolean flag to show whether the transaction is a trial or not.'
+
+      - name: platform
+        data_type: varchar
+        description: 'The last seen platform of the subscriber. e.g. android, iOS.'
+
+      - name: previous_product
+        data_type: varchar
+        description: 'The product identifer of product that the user was previously subscribed to.'
+
+      - name: previous_subscription_state
+        data_type: varchar
+        description: 'The previous state of the subscription when a state change occurs. e.g active, churned, cancelled.'
+
+      - name: product_identifier
+        data_type: varchar
+        description: 'The product identifier that was purchased.'
+
+      - name: rc_last_seen_app_user_id_alias
+        data_type: varchar
+        description: 'The most recent ID linked to the user purchasing the transaction. This can be used to link to user account.'
+
+      - name: rc_original_app_user_id
+        data_type: varchar
+        description: 'A unique user identifier to find all of a users transactions.'
+
+      - name: renewal_number
+        data_type: varchar
+        description: 'An incrementing number to show how many times the subscription has been renewed. This resets on reactivation.'
+
+      - name: store_transaction_id
+        data_type: varchar
+        description: 'The unique order ID for the transaction.'
+        tests:
+          - not_null
+
+      - name: subscription_state
+        data_type: varchar
+        description: 'The state that the subscription is moving to during a state change. e.g active, churned, cancelled.'
+        tests:
+          - not_null
+
+      - name: subscription_status
+        data_type: varchar
+        description: 'The status of the subscription depending on the previous and current state. e.g. renewed, reactivated.'
+        tests:
+          - not_null
+
+      - name: valid_from
+        data_type: timestamp_ntz
+        description: 'The time that the record is valid from. Used for SCD.'
+        tests:
+          - not_null
+
+      - name: valid_period
+        data_type: number
+        description: 'The number of hours that the subcription has been at the current state.'
+
+      - name: valid_to
+        data_type: timestamp_ntz
+        description: 'The time that the record is valid to. Used for SCD.'
+
+  - name: revenuecat_subscription_products
+    description: 'One row per product. A unique list of each product showing when it was first and last subscribed to.'
+    columns:
+      - name: country_codes
+        data_type: array
+        description: 'The 2-letter country codes of the subscriber. e.g. US, GB.'
+
+      - name: first_subscribed_at
+        data_type: timestamp_ntz
+        description: 'The timestamp of when the subscription product was first subscribed to.'
+
+      - name: latest_effective_end_time
+        data_type: timestamp_ntz
+        description: ''
+
+      - name: latest_subscribed_at
+        data_type: timestamp_ntz
+        description: 'The timestamp showing that last time a subscription product was subscribed to.'
+
+      - name: platforms
+        data_type: array
+        description: 'The platforms that the subscription is available on. e.g. android, iOS.'
+
+      - name: product_display_name
+        data_type: varchar
+        description: 'The display name of the product identifier if one has been set.'
+
+      - name: product_duration
+        data_type: varchar
+        description: 'The standard duration of the product. e.g. P1M(monthly), P1Y(yearly).'
+        tests:
+          - accepted_values:
+              values: ['P1Y', 'P1M', 'P1W']
+
+      - name: product_identifier
+        data_type: varchar
+        description: 'The product identifier that was purchased.'
+        tests:
+          - unique
+          - not_null

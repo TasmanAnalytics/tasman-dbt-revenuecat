@@ -1,0 +1,385 @@
+version: 2
+
+models:
+  - name: revenuecat_cohort_conversion
+    description: ''
+    columns:
+      - name: conversion_timestamp
+        data_type: timestamp_ntz
+        description: 'The timestamp of when the user first converted from a trial to paid.'
+
+      - name: country_code
+        data_type: varchar
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
+
+      - name: is_new_conversion
+        data_type: boolean
+        description: 'A boolean flag to show if the activity is a conversion from a trial or not.'
+
+      - name: is_new_paid
+        data_type: boolean
+        description: 'A boolean flag to show if the activity is a direct paid conversion.'
+
+      - name: is_new_trial
+        data_type: boolean
+        description: 'A boolean flag to show if the activity is a trial conversion.'
+
+      - name: new_paid_timestamp
+        data_type: timestamp_ntz
+        description: 'The timestamp of when the first paid subscription was purchased.'
+
+      - name: platform
+        data_type: varchar
+        description: 'The last seen platform of the subscriber. e.g. android, iOS.'
+
+      - name: rc_original_app_user_id
+        data_type: varchar
+        description: 'A unique user identifier to find all of a users transactions.'
+
+      - name: start_timestamp
+        data_type: timestamp_ntz
+        description: 'The timestamp of when the user had its first activity.'
+
+      - name: trial_timestamp
+        data_type: timestamp_ntz
+        description: 'The timestamp of when the user had its first trial.'
+
+  - name: revenuecat_daily_subscription_states
+    description: 'One row per day, per country, per platform and product to show the number of subscriptions that entered a certain state on that day.'
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_day
+            - country_code
+            - platform
+            - product_identifier
+    columns:
+      - name: count_of_cancelled
+        data_type: number
+        description: 'The number of subscriptions that were cancelled.'
+
+      - name: count_of_converted
+        data_type: number
+        description: 'The number of subscriptions that converted from a trial to paid.'
+
+      - name: count_of_crossgrade
+        data_type: number
+        description: 'The number of subscriptions that upgraded from a monthly subscription to a yearly.'
+
+      - name: count_of_downgrade
+        data_type: number
+        description: 'The number of subscriptions that downgraded from a yearly subscription to a monthly.'
+
+      - name: count_of_expired
+        data_type: number
+        description: 'The number of subscriptions that expired.'
+
+      - name: count_of_new_paid
+        data_type: number
+        description: 'The number of new paid subscriptions.'
+
+      - name: count_of_new_trial
+        data_type: number
+        description: 'The number of trial subscriptions.'
+
+      - name: count_of_reactivated
+        data_type: number
+        description: 'The number of subscriptions that were reactivated after expiring.'
+
+      - name: count_of_renewed
+        data_type: number
+        description: 'The number of subscriptions that renewed with no gap.'
+
+      - name: country_code
+        data_type: varchar
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
+
+
+      - name: date_day
+        data_type: timestamp_ntz
+        description: 'The day that the point in time reporting takes place on.'
+
+
+      - name: platform
+        data_type: varchar
+        description: 'The last seen platform of the subscriber. e.g. android, iOS.'
+
+
+      - name: product_identifier
+        data_type: varchar
+        description: 'The product identifier that was purchased.'
+
+  - name: revenuecat_daily_subscriptions
+    description: 'One row per day, per country, per platform and product to show the number of (active) subscribers, subscriptions and revenue on that day.'
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_day
+            - country_code
+            - platform
+            - product_identifier
+    columns:
+      - name: commission_in_usd
+        data_type: float
+        description: 'The price in US dollar multiplied by the percentage of commission set by the store.'
+
+      - name: country_code
+        data_type: varchar
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
+
+
+      - name: date_day
+        data_type: timestamp_ntz
+        description: 'The day that the point in time reporting takes place on.'
+
+
+      - name: estimated_tax_in_usd
+        data_type: float
+        description: 'The price in US dollars multiplied by the percentage of tax.'
+
+      - name: estimated_tax_in_usd
+        data_type: float
+        description: 'The price in US dollars multiplied by the percentage of tax.'
+
+      - name: new_revenue_in_usd
+        data_type: float
+        description: 'The sum of new revenue (first paid subscription) in US dollars.'
+
+      - name: new_revenue_in_usd
+        data_type: float
+        description: 'The sum of new revenue (first paid subscription) in US dollars.'
+
+      - name: paid_subscriber_count
+        data_type: number
+        description: 'The number of paid subscribers in a day, week or month.'
+
+      - name: paid_subscription_count
+        data_type: number
+        description: 'The number of paid subscriptions in a day, week or month.'
+
+      - name: platform
+        data_type: varchar
+        description: 'The last seen platform of the subscriber. e.g. android, iOS.'
+
+      - name: platform
+        data_type: varchar
+        description: 'The last seen platform of the subscriber. e.g. android, iOS.'
+
+
+      - name: proceeds_in_usd
+        data_type: float
+        description: 'The revenue caluculated from the price of the subscription, taking tax and store comission into account.'
+
+      - name: proceeds_in_usd
+        data_type: float
+        description: 'The revenue caluculated from the price of the subscription, taking tax and store comission into account.'
+
+      - name: product_identifier
+        data_type: varchar
+        description: 'The product identifier that was purchased.'
+
+
+      - name: product_identifier
+        data_type: varchar
+        description: 'The product identifier that was purchased.'
+
+      - name: renewal_revenue_in_usd
+        data_type: float
+        description: 'The sum of renewal revenue in US dollars.'
+
+      - name: renewal_revenue_in_usd
+        data_type: float
+        description: 'The sum of renewal revenue in US dollars.'
+
+      - name: total_revenue_in_usd
+        data_type: float
+        description: 'The sum of total revenue (ignore tax and commisions) in US dollars.'
+
+      - name: total_revenue_in_usd
+        data_type: float
+        description: 'The sum of total revenue (ignore tax and commisions) in US dollars.'
+
+      - name: trial_subscriber_count
+        data_type: number
+        description: 'The number of trial subscribers in a day, week or month.'
+
+      - name: trial_subscription_count
+        data_type: number
+        description: 'The number of trial subscriptions in a day, week or month.'
+
+  - name: revenuecat_monthly_recurring_revenue
+    description: 'One row per month, per country, per platform and product to show the monthly recurring revenue.'
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_month
+            - country_code
+            - platform
+            - product_identifier
+    columns:
+      - name: country_code
+        data_type: varchar
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
+
+      - name: date_month
+        data_type: timestamp_ntz
+        description: 'The month that the point in time reporting takes place in.'
+
+      - name: mrr_in_usd
+        data_type: number
+        description: 'The monthly recurring revenue.'
+        tests:
+          - test_compare_to_source:
+              enabled: "{{ true if var('revenuecat_mrr_test_seed') != '' else false }}"
+              date_field: date_month
+              source_model: "{{ var('revenuecat_mrr_test_seed') }}"
+              source_date: report_date
+              source_metric: mrr
+              percent_mismatch_threshold: 0.1
+
+      - name: platform
+        data_type: varchar
+        description: 'The last seen platform of the subscriber. e.g. android, iOS.'
+
+      - name: product_identifier
+        data_type: varchar
+        description: 'The product identifier that was purchased.'
+
+
+  - name: revenuecat_monthly_subscriptions
+    description: 'One row per month, per country, per platform and product to show the numbers of active subscriptions on that last day of the month.'
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_month
+            - country_code
+            - platform
+            - product_identifier
+    columns:
+      - name: country_code
+        data_type: varchar
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
+
+      - name: date_month
+        data_type: timestamp_ntz
+        description: 'The month that the point in time reporting takes place in.'
+
+      - name: paid_subscription_count
+        data_type: number
+        description: 'The number of paid subscriptions in a day, week or month.'
+
+      - name: platform
+        data_type: varchar
+        description: 'The last seen platform of the subscriber. e.g. android, iOS.'
+
+      - name: product_identifier
+        data_type: varchar
+        description: 'The product identifier that was purchased.'
+
+      - name: trial_subscription_count
+        data_type: number
+        description: 'The number of trial subscriptions in a day, week or month.'
+
+  - name: revenuecat_weekly_subscription
+    description: 'One row per week, per country, per platform and product to show the number of active subscriptions at the end of the week.'
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - date_week
+            - country_code
+            - platform
+            - product_identifier
+    columns:
+      - name: country_code
+        data_type: varchar
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
+
+      - name: date_week
+        data_type: timestamp_ntz
+        description: 'The week that the point in time reporting takes place in.'
+
+      - name: paid_subscription_count
+        data_type: number
+        description: 'The number of paid subscriptions in a day, week or month.'
+
+      - name: platform
+        data_type: varchar
+        description: 'The last seen platform of the subscriber. e.g. android, iOS.'
+
+      - name: product_identifier
+        data_type: varchar
+        description: 'The product identifier that was purchased.'
+
+      - name: trial_subscription_count
+        data_type: number
+        description: 'The number of trial subscriptions in a day, week or month.'
+
+  - name: revenuecat_daily_subscribers
+    description: ''
+    columns:
+      - name: country_code
+        data_type: varchar
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
+
+      - name: date_day
+        data_type: timestamp_ntz
+        description: 'The day that the point in time reporting takes place on.'
+
+      - name: paid_subscriber_count
+        data_type: number
+        description: 'The number of paid subscribers in a day, week or month.'
+
+      - name: platform
+        data_type: varchar
+        description: 'The last seen platform of the subscriber. e.g. android, iOS.'
+
+      - name: product_identifier
+        data_type: varchar
+        description: 'The product identifier that was purchased.'
+
+      - name: trial_subscriber_count
+        data_type: number
+        description: 'The number of trial subscribers in a day, week or month.'
+
+  - name: revenuecat_daily_subscription_revenue
+    description: ''
+    columns:
+      - name: commission_in_usd
+        data_type: float
+        description: 'The price in US dollar multiplied by the percentage of commission set by the store.'
+
+      - name: country_code
+        data_type: varchar
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
+
+      - name: date_day
+        data_type: date
+        description: 'The day that the point in time reporting takes place on.'
+
+      - name: estimated_tax_in_usd
+        data_type: float
+        description: 'The price in US dollars multiplied by the percentage of tax.'
+
+      - name: new_revenue_in_usd
+        data_type: float
+        description: 'The sum of new revenue (first paid subscription) in US dollars.'
+
+      - name: platform
+        data_type: varchar
+        description: 'The last seen platform of the subscriber. e.g. android, iOS.'
+
+      - name: proceeds_in_usd
+        data_type: float
+        description: 'The revenue caluculated from the price of the subscription, taking tax and store comission into account.'
+
+      - name: product_identifier
+        data_type: varchar
+        description: 'The product identifier that was purchased.'
+
+      - name: renewal_revenue_in_usd
+        data_type: float
+        description: 'The sum of renewal revenue in US dollars.'
+
+      - name: total_revenue_in_usd
+        data_type: float
+        description: 'The sum of total revenue (ignore tax and commisions) in US dollars.'

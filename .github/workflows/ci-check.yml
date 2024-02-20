@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  pull_request:
+
+# Automatically cancel any previous runs of this workflow
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci-check-snowflake:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./integration_tests
+    env:
+      SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+      SNOWFLAKE_USER_CI: ${{ secrets.SNOWFLAKE_CI_USER }}
+      SNOWFLAKE_PASSWORD_CI: ${{ secrets.SNOWFLAKE_CI_USER_PASSWORD }}
+      SNOWFLAKE_DATABASE_CI: DBT_PACKAGE_CI
+      SNOWFLAKE_ROLE_CI: PACKAGE_CI_ROLE
+      SNOWFLAKE_WAREHOUSE_CI: PACKAGE_CI_WH
+      SNOWFLAKE_SCHEMA_CI: DBT_CI_${{github.event.number}}_${{ github.actor }} # Creates a unique schema for each PR
+    steps:
+      - name: Checkout branch
+        id: checkout-branch
+        uses: actions/checkout@v3
+
+      - name: Install Poetry
+        id: install-poetry
+        run: |
+          pipx install poetry
+
+      - name: setup-python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+          cache: 'poetry' # Auto cache based on poetry.lock
+
+      - name: Install python deps
+        id: install-python-deps
+        run: |
+          poetry install
+
+      - name: Install dbt deps
+        id: install-dbt-deps
+        run: |
+          poetry run dbt deps
+
+      - name: Check dbt compiles and CI Profiles work
+        id: check-dbt-ci-profiles-work
+        run: |
+          poetry run dbt debug --target snowflake-ci
+
+      - name: dbt seed on Snowflake
+        id: dbt-seed-snowflake
+        run: |
+          poetry run dbt seed --target snowflake-ci
+
+      - name: dbt run on Snowflake
+        id: dbt-run-snowflake
+        run: |
+          poetry run dbt run --full-refresh --target snowflake-ci
+
+      - name: dbt test on Snowflake
+        id: dbt-test-snowflake
+        run: |
+          poetry run dbt test --target snowflake-ci

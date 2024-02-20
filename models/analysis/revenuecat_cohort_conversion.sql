@@ -1,9 +1,7 @@
 with
 
 subscription_activities as (
-
     select * from {{ ref('revenuecat_subscription_activities') }}
-
 ),
 
 distinct_users as (

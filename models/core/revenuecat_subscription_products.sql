@@ -2,7 +2,7 @@ with
 
 revenuecat_transactions as (
 
-    select * from {{ ref('stg_revenuecat_transactions') }}
+    select * from {{ ref('revenuecat_subscription_transactions') }}
 
 ),
 

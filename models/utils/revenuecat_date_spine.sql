@@ -1,14 +1,14 @@
 with
 
 {% set get_first_subscription_date %}
-    select min(start_time)::date::string from {{ ref('stg_revenuecat_transactions') }}
+    select min(start_time)::date::string from {{ ref('revenuecat_subscription_transactions') }}
 {% endset %}
-{%- set first_subscription_date = dbt_utils.get_single_value(get_first_subscription_date, default="'2023-01-01'") -%}
+{%- set first_subscription_date = tasman_dbt_revenuecat.get_single_value(get_first_subscription_date, default="'2023-01-01'") -%}
 
 
 date_spine as (
 
-    {{ dbt_utils.date_spine(
+    {{ tasman_dbt_revenuecat.date_spine(
         datepart="day",
         start_date="'" + first_subscription_date + "'",
         end_date="convert_timezone('UTC', current_timestamp)::date"

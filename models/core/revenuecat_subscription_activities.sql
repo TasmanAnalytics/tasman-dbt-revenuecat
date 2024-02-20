@@ -2,7 +2,7 @@ with
 
 subscription_transactions as (
 
-    select * from {{ ref('stg_revenuecat_transactions') }} where valid_to is null
+    select * from {{ ref('revenuecat_subscription_transactions') }} where valid_to is null
 
 ),
 
@@ -22,7 +22,7 @@ unpivoted_transactions as (
 
 ),
 
-final as (
+activities as (
 
     select
         * exclude (timestamp_type),
@@ -39,6 +39,15 @@ final as (
     from
         unpivoted_transactions
 
+),
+
+final as (
+    select
+        {{ tasman_dbt_revenuecat.generate_surrogate_key(['store_transaction_id', 'activity_timestamp', 'activity'])}} as activity_row_id,
+        *
+    from
+        activities
+        
 )
 
 select * from final

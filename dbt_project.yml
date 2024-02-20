@@ -11,3 +11,4 @@ log-path: "logs"
 models:
   tasman_dbt_revenuecat:
     +materialized: table
+    +schema: revenuecat

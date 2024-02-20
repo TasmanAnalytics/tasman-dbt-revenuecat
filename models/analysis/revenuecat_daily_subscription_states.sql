@@ -1,34 +1,23 @@
 with
 
 subscription_entitlements as (
-
     select * from {{ ref('revenuecat_subscription_entitlements') }}
-
 ),
 
 subscription_activities as (
-
     select * from {{ ref('revenuecat_subscription_activities') }}
-
 ),
 
 subscription_transactions as (
-
-    select * from {{ ref('stg_revenuecat_transactions') }}
-    where valid_to is null
-
+    select * from {{ ref('revenuecat_subscription_transactions') }} where valid_to is null
 ),
 
 subscription_products as (
-
     select * from {{ ref('revenuecat_subscription_products') }}
-
 ),
 
 date_spine as (
-
-    select * from {{ ref('date_spine') }}
-
+    select * from {{ ref('revenuecat_date_spine') }}
 ),
 
 flattened_dimensions as (
@@ -166,6 +155,12 @@ daily_subscriptions_state as (
 final as (
 
     select
+        {{ tasman_dbt_revenuecat.generate_surrogate_key([
+            'daily_new_subscriptions.date_day',
+            'daily_new_subscriptions.country_code',
+            'daily_new_subscriptions.platform',
+            'daily_new_subscriptions.product_identifier'
+        ])}} as row_id,
         daily_new_subscriptions.date_day,
         daily_new_subscriptions.country_code,
         daily_new_subscriptions.platform,

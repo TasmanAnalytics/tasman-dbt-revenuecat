@@ -1,16 +1,11 @@
 with
 
 subscription_transactions as (
-
-    select * from {{ ref('stg_revenuecat_transactions') }}
-    where valid_to is null
-
+    select * from {{ ref('revenuecat_subscription_transactions') }} where valid_to is null
 ),
 
 date_spine as (
-
-    select distinct date_month from {{ ref('date_spine') }}
-
+    select distinct date_month from {{ ref('revenuecat_date_spine') }}
 ),
 
 transaction_monthly_revenue as (
@@ -32,6 +27,12 @@ transaction_monthly_revenue as (
 final as (
 
     select
+        {{ tasman_dbt_revenuecat.generate_surrogate_key([
+            'date_spine.date_month',
+            'transaction_monthly_revenue.country_code',
+            'transaction_monthly_revenue.platform',
+            'transaction_monthly_revenue.product_identifier'
+        ])}} as row_id,
         date_spine.date_month,
         transaction_monthly_revenue.country_code,
         transaction_monthly_revenue.platform,

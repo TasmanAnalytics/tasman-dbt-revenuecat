@@ -8,29 +8,33 @@
 with
 
 source as (
+    select 
+        * 
+    from 
+        {{ source('revenuecat', 'transactions') }}
 
-    select * from {{ source('revenuecat', 'transactions') }}
     where 1=1
-    {% if var('revenuecat_filter') %}
-    and {{ var('revenuecat_filter') }}
-    {% endif %}
-    {% if is_incremental() %}
-    and regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz > (select max(_exported_at) from {{ this }})
-    {% endif %}
+        {% if var('revenuecat_filter') %}
+        and {{ var('revenuecat_filter') }}
+        {% endif %}
+        {% if is_incremental() %}
+        and regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz > (select max(_exported_at) from {{ this }})
+        {% endif %}
 
 ),
 
 deduplicate as (
 
     select * from source
-    qualify row_number() over (partition by store_transaction_id, updated_at order by regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz desc) = 1
+    qualify
+        row_number() over (partition by store_transaction_id, updated_at order by regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz desc) = 1
 
 ),
 
 renamed as (
 
     select
-        {{ dbt_utils.generate_surrogate_key(['store_transaction_id', 'updated_at'])}} as id,
+        {{ tasman_dbt_revenuecat.generate_surrogate_key(['store_transaction_id', 'updated_at'])}} as id,
         rc_original_app_user_id,
         rc_last_seen_app_user_id_alias,
         country as country_code,

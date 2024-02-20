@@ -1,16 +1,11 @@
 with
 
 subscription_transactions as (
-
-    select * from {{ ref('stg_revenuecat_transactions') }}
-    where valid_to is null
-
+    select * from {{ ref('revenuecat_subscription_transactions') }} where valid_to is null
 ),
 
 date_spine as (
-
-    select distinct date_month from {{ ref('date_spine') }}
-
+    select distinct date_month from {{ ref('revenuecat_date_spine') }}
 ),
 
 transaction_monthly_revenue as (

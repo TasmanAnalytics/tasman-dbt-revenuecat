@@ -1,15 +1,11 @@
 with
 
 subscription_entitlements as (
-
     select * from {{ ref('revenuecat_subscription_entitlements') }}
-
 ),
 
 date_spine as (
-
-    select * from {{ ref('date_spine') }}
-
+    select * from {{ ref('revenuecat_date_spine') }}
 ),
 
 final as (

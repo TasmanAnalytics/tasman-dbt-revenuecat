@@ -2,14 +2,14 @@ with
 
 subscription_transactions as (
 
-    select * from {{ ref('stg_revenuecat_transactions') }}
+    select * from {{ ref('revenuecat_subscription_transactions') }}
     where valid_to is null
 
 ),
 
 date_spine as (
 
-    select * from {{ ref('date_spine') }}
+    select * from {{ ref('revenuecat_date_spine') }}
 
 ),
 

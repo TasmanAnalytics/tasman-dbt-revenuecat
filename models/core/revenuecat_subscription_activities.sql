@@ -2,7 +2,7 @@ with
 
 subscription_transactions as (
 
-    select * from {{ ref('stg_revenuecat_transactions') }} where valid_to is null
+    select * from {{ ref('revenuecat_subscription_transactions') }} where valid_to is null
 
 ),
 

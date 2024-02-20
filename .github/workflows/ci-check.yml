@@ -59,7 +59,12 @@ jobs:
         run: |
           poetry run dbt seed --target snowflake-ci
 
-      - name: dbt build on Snowflake
-        id: dbt-build-snowflake
+      - name: dbt run on Snowflake
+        id: dbt-run-snowflake
         run: |
-          poetry run dbt build --full-refresh --target snowflake-ci
+          poetry run dbt run --full-refresh --target snowflake-ci
+
+      - name: dbt test on Snowflake
+        id: dbt-test-snowflake
+        run: |
+          poetry run dbt test --target snowflake-ci

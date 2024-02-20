@@ -1,7 +1,7 @@
 with
 
 {% set get_first_subscription_date %}
-    select min(start_time)::date::string from {{ ref('stg_revenuecat_transactions') }}
+    select min(start_time)::date::string from {{ ref('revenuecat_subscription_transactions') }}
 {% endset %}
 {%- set first_subscription_date = dbt_utils.get_single_value(get_first_subscription_date, default="'2023-01-01'") -%}
 

@@ -27,6 +27,12 @@ transaction_monthly_revenue as (
 final as (
 
     select
+        {{ tasman_dbt_revenuecat.generate_surrogate_key([
+            'date_spine.date_month',
+            'transaction_monthly_revenue.country_code',
+            'transaction_monthly_revenue.platform',
+            'transaction_monthly_revenue.product_identifier'
+        ])}} as row_id,
         date_spine.date_month,
         transaction_monthly_revenue.country_code,
         transaction_monthly_revenue.platform,

@@ -155,6 +155,12 @@ daily_subscriptions_state as (
 final as (
 
     select
+        {{ tasman_dbt_revenuecat.generate_surrogate_key([
+            'daily_new_subscriptions.date_day',
+            'daily_new_subscriptions.country_code',
+            'daily_new_subscriptions.platform',
+            'daily_new_subscriptions.product_identifier'
+        ])}} as row_id,
         daily_new_subscriptions.date_day,
         daily_new_subscriptions.country_code,
         daily_new_subscriptions.platform,

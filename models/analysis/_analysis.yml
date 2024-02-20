@@ -46,14 +46,14 @@ models:
 
   - name: revenuecat_daily_subscription_states
     description: 'One row per day, per country, per platform and product to show the number of subscriptions that entered a certain state on that day.'
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - date_day
-            - country_code
-            - platform
-            - product_identifier
     columns:
+      - name: row_id
+        data_type: string
+        description: 'Unique identifier determined from combination of date, country, platform and product.'
+        tests:
+          - unique
+          - not_null
+
       - name: count_of_cancelled
         data_type: number
         description: 'The number of subscriptions that were cancelled.'
@@ -111,14 +111,14 @@ models:
 
   - name: revenuecat_daily_subscriptions
     description: 'One row per day, per country, per platform and product to show the number of (active) subscribers, subscriptions and revenue on that day.'
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - date_day
-            - country_code
-            - platform
-            - product_identifier
     columns:
+      - name: row_id
+        data_type: string
+        description: 'Unique identifier determined from combination of date, country, platform and product.'
+        tests:
+          - unique
+          - not_null
+
       - name: commission_in_usd
         data_type: float
         description: 'The price in US dollar multiplied by the percentage of commission set by the store.'
@@ -209,14 +209,14 @@ models:
 
   - name: revenuecat_monthly_recurring_revenue
     description: 'One row per month, per country, per platform and product to show the monthly recurring revenue.'
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - date_month
-            - country_code
-            - platform
-            - product_identifier
     columns:
+      - name: row_id
+        data_type: string
+        description: 'Unique identifier determined from combination of month, country, platform and product.'
+        tests:
+          - unique
+          - not_null
+
       - name: country_code
         data_type: varchar
         description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
@@ -245,17 +245,16 @@ models:
         data_type: varchar
         description: 'The product identifier that was purchased.'
 
-
   - name: revenuecat_monthly_subscriptions
     description: 'One row per month, per country, per platform and product to show the numbers of active subscriptions on that last day of the month.'
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - date_month
-            - country_code
-            - platform
-            - product_identifier
     columns:
+      - name: row_id
+        data_type: string
+        description: 'Unique identifier determined from combination of month, country, platform and product.'
+        tests:
+          - unique
+          - not_null
+
       - name: country_code
         data_type: varchar
         description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
@@ -282,14 +281,14 @@ models:
 
   - name: revenuecat_weekly_subscription
     description: 'One row per week, per country, per platform and product to show the number of active subscriptions at the end of the week.'
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - date_week
-            - country_code
-            - platform
-            - product_identifier
     columns:
+      - name: row_id
+        data_type: string
+        description: 'Unique identifier determined from combination of week, country, platform and product.'
+        tests:
+          - unique
+          - not_null
+
       - name: country_code
         data_type: varchar
         description: 'The 2-letter country code of the subscriber. e.g. US, GB.'

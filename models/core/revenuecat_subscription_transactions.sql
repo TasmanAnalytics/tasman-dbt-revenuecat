@@ -32,7 +32,7 @@ deduplicate as (
 renamed as (
 
     select
-        {{ tasman_dbt_revenuecat.generate_surrogate_key(['store_transaction_id', 'updated_at'])}} as row_id,
+        {{ tasman_dbt_revenuecat.generate_surrogate_key(['store_transaction_id', 'updated_at'])}} as transaction_row_id,
         rc_original_app_user_id,
         rc_last_seen_app_user_id_alias,
         country as country_code,

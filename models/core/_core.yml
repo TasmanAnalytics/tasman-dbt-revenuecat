@@ -4,7 +4,7 @@ models:
   - name: revenuecat_subscription_transactions
     description: 'SCD table to show all revenuecat transactions and each transactions history, excluding sandbox transactions.'
     columns:
-      - name: row_id
+      - name: transaction_row_id
         data_type: string
         description: 'Unique identifier derived from combination of transaction ID and updated at timestamp'
         tests:
@@ -228,13 +228,13 @@ models:
 
   - name: revenuecat_subscription_activities
     description: 'One row per transaction, per activity. Pivots the transactions table to create an event stream of when transactions change.'
-    tests:
-      - dbt_utils.unique_combination_of_columns:
-          combination_of_columns:
-            - store_transaction_id
-            - activity_timestamp
-            - activity
     columns:
+      - name: activity_row_id
+        data_type: string
+        description: 'Unique identifier derived from combination of transaction ID and updated at timestamp'
+        tests:
+          - unique
+          - not_null
 
       - name: _exported_at
         data_type: timestamp_ntz

@@ -1,0 +1,20 @@
+version: 2
+
+models:
+  - name: date_spine
+    description: ''
+    columns:
+      - name: date_day
+        data_type: timestamp_ntz
+        description: 'The day that the point in time reporting takes place on.'
+        tests:
+          - not_null
+          - unique
+
+      - name: date_month
+        data_type: timestamp_ntz
+        description: 'The month that the point in time reporting takes place in.'
+
+      - name: date_week
+        data_type: timestamp_ntz
+        description: 'The week that the point in time reporting takes place in.'

@@ -235,7 +235,7 @@ models:
               source_model: "{{ var('revenuecat_mrr_test_seed') }}"
               source_date: report_date
               source_metric: mrr
-              percent_mismatch_threshold: 0.1
+              percent_mismatch_threshold: "{{ var('revenuecat_mrr_test_threshold', 1) }}"
 
       - name: platform
         data_type: varchar

@@ -50,58 +50,39 @@ renamed as (
         price_in_usd * tax_percentage as estimated_tax_in_usd,
         price_in_usd - commission_in_usd - estimated_tax_in_usd as proceeds_in_usd,
         -- Documentation for normalizing mrr_in_usd: https://docs.revenuecat.com/docs/monthly-recurring-revenue-mrr_in_usd-chart
-		case when effective_end_time is not null then
-            case 
-                /* handle cases where product_duration cannot be used for the transaction first */
-                when (is_in_intro_offer_period = 'true' or product_duration is null) then 
-                case
-                    when datediff(day, start_time, expected_end_time) between 0 and 1 
-                        then (30 * price_in_usd)::decimal(18,2)
-                    when datediff(day, start_time, expected_end_time) = 3 
-                        then (10 * price_in_usd)::decimal(18,2)
-                    when datediff(day, start_time, expected_end_time) between 6 and 8 
-                        then (4 * price_in_usd)::decimal(18,2)
-                    when datediff(day, start_time, expected_end_time) between 12 and 16 
-                        then (2 * price_in_usd)::decimal(18,2)
-                    when datediff(day, start_time, expected_end_time) between 27 and 33 
-                        then (1 * price_in_usd)::decimal(18,2)
-                    when datediff(day, start_time, expected_end_time) between 58 and 62 
-                        then (0.5 * price_in_usd)::decimal(18,2)
-                    when datediff(day, start_time, expected_end_time) between 88 and 95 
-                        then (0.333333 * price_in_usd)::decimal(18,2)
-                    when datediff(day, start_time, expected_end_time) between 179 and 185 
-                        then (0.1666666 * price_in_usd)::decimal(18,2)
-                    when datediff(day, start_time, expected_end_time) between 363 and 375 
-                        then (0.08333 * price_in_usd)::decimal(18,2)
-                    else ((28 / (datediff('s', start_time, expected_end_time)::float / (24 * 3600))) * price_in_usd)::decimal(18,2)
+		case 
+            when effective_end_time is not null then
+                case 
+                    /* handle cases where product_duration cannot be used for the transaction first */
+                    when (is_in_intro_offer_period = 'true' or product_duration is null) 
+                        then 
+                            case
+                                when datediff(day, start_time, expected_end_time) between 0 and 1 then (30 * price_in_usd)
+                                when datediff(day, start_time, expected_end_time) = 3 then (10 * price_in_usd)
+                                when datediff(day, start_time, expected_end_time) between 6 and 8 then (4 * price_in_usd)
+                                when datediff(day, start_time, expected_end_time) between 12 and 16 then (2 * price_in_usd)
+                                when datediff(day, start_time, expected_end_time) between 27 and 33 then (1 * price_in_usd)
+                                when datediff(day, start_time, expected_end_time) between 58 and 62 then (0.5 * price_in_usd)
+                                when datediff(day, start_time, expected_end_time) between 88 and 95 then (0.333333 * price_in_usd)
+                                when datediff(day, start_time, expected_end_time) between 179 and 185 then (0.1666666 * price_in_usd)
+                                when datediff(day, start_time, expected_end_time) between 363 and 375 then (0.08333 * price_in_usd)
+                                else ((28 / (datediff('s', start_time, expected_end_time) / (24 * 3600))) * price_in_usd)
+                            end
+                        /* then handle cases where product_duration can be used */
+                    when product_duration = 'P1D' then (30 * price_in_usd)
+                    when product_duration = 'P3D' then (10 * price_in_usd)
+                    when product_duration = 'P7D' then (4 * price_in_usd)
+                    when product_duration = 'P1W' then (4 * price_in_usd)
+                    when product_duration = 'P2W' then (2 * price_in_usd)
+                    when product_duration = 'P4W' then (1 * price_in_usd)
+                    when product_duration = 'P1M' then (1 * price_in_usd)
+                    when product_duration = 'P2M' then (0.5 * price_in_usd)
+                    when product_duration = 'P3M' then (0.333333 * price_in_usd)
+                    when product_duration = 'P6M' then (0.1666666 * price_in_usd)
+                    when product_duration = 'P12M' then (0.08333 * price_in_usd)
+                    when product_duration = 'P1Y' then (0.08333 * price_in_usd)
+                    else ((28 / (datediff('s', start_time, expected_end_time) / (24 * 3600))) * price_in_usd)
                 end
-                /* then handle cases where product_duration can be used */
-                when product_duration = 'P1D' 
-                    then (30 * price_in_usd)::decimal(18,2)
-                when product_duration = 'P3D' 
-                    then (10 * price_in_usd)::decimal(18,2)
-                when product_duration = 'P7D' 
-                    then (4 * price_in_usd)::decimal(18,2)
-                when product_duration = 'P1W' 
-                    then (4 * price_in_usd)::decimal(18,2)
-                when product_duration = 'P2W' 
-                    then (2 * price_in_usd)::decimal(18,2)
-                when product_duration = 'P4W' 
-                    then (1 * price_in_usd)::decimal(18,2)
-                when product_duration = 'P1M' 
-                    then (1 * price_in_usd)::decimal(18,2)
-                when product_duration = 'P2M' 
-                    then (0.5 * price_in_usd)::decimal(18,2)
-                when product_duration = 'P3M' 
-                    then (0.333333 * price_in_usd)::decimal(18,2)
-                when product_duration = 'P6M' 
-                    then (0.1666666 * price_in_usd)::decimal(18,2)
-                when product_duration = 'P12M' 
-                    then (0.08333 * price_in_usd)::decimal(18,2)
-                when product_duration = 'P1Y' 
-                    then (0.08333 * price_in_usd)::decimal(18,2)
-                else ((28 / (datediff('s', start_time, expected_end_time)::float / (24 * 3600))) * price_in_usd)::decimal(18,2)
-            end
         end as mrr_in_usd,
         takehome_percentage,
 

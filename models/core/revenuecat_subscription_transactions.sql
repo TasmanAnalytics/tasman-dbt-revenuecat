@@ -1,7 +1,7 @@
 {{
   config(
     materialized = 'incremental',
-    unique_key = 'row_id',
+    unique_key = 'transaction_row_id',
     )
 }}
 
@@ -50,11 +50,39 @@ renamed as (
         price_in_usd * tax_percentage as estimated_tax_in_usd,
         price_in_usd - commission_in_usd - estimated_tax_in_usd as proceeds_in_usd,
         -- Documentation for normalizing mrr_in_usd: https://docs.revenuecat.com/docs/monthly-recurring-revenue-mrr_in_usd-chart
-        case
-            when product_duration = 'P1M' then price_in_usd
-            when product_duration = 'P1Y' then price_in_usd / 12
-            when product_duration = 'P1W' then price_in_usd * 4
-            else 0
+		case 
+            when effective_end_time is not null then
+                case 
+                    /* handle cases where product_duration cannot be used for the transaction first */
+                    when (is_in_intro_offer_period = 'true' or product_duration is null) 
+                        then 
+                            case
+                                when datediff(day, start_time, expected_end_time) between 0 and 1 then round(30 * price_in_usd, 2)
+                                when datediff(day, start_time, expected_end_time) = 3 then round(10 * price_in_usd, 2)
+                                when datediff(day, start_time, expected_end_time) between 6 and 8 then round(4 * price_in_usd, 2)
+                                when datediff(day, start_time, expected_end_time) between 12 and 16 then round(2 * price_in_usd, 2)
+                                when datediff(day, start_time, expected_end_time) between 27 and 33 then round(1 * price_in_usd, 2)
+                                when datediff(day, start_time, expected_end_time) between 58 and 62 then round(0.5 * price_in_usd, 2)
+                                when datediff(day, start_time, expected_end_time) between 88 and 95 then round(0.333333 * price_in_usd, 2)
+                                when datediff(day, start_time, expected_end_time) between 179 and 185 then round(0.1666666 * price_in_usd, 2)
+                                when datediff(day, start_time, expected_end_time) between 363 and 375 then round(0.08333 * price_in_usd, 2)
+                                else round(((28 / (datediff('s', start_time, expected_end_time) / (24 * 3600))) * price_in_usd), 2)
+                            end
+                        /* then handle cases where product_duration can be used */
+                    when product_duration = 'P1D' then round(30 * price_in_usd, 2)
+                    when product_duration = 'P3D' then round(10 * price_in_usd, 2)
+                    when product_duration = 'P7D' then round(4 * price_in_usd, 2)
+                    when product_duration = 'P1W' then round(4 * price_in_usd, 2)
+                    when product_duration = 'P2W' then round(2 * price_in_usd, 2)
+                    when product_duration = 'P4W' then round(1 * price_in_usd, 2)
+                    when product_duration = 'P1M' then round(1 * price_in_usd, 2)
+                    when product_duration = 'P2M' then round(0.5 * price_in_usd, 2)
+                    when product_duration = 'P3M' then round(0.333333 * price_in_usd, 2)
+                    when product_duration = 'P6M' then round(0.1666666 * price_in_usd, 2)
+                    when product_duration = 'P12M' then round(0.08333 * price_in_usd, 2)
+                    when product_duration = 'P1Y' then round(0.08333 * price_in_usd, 2)
+                    else round(((28 / (datediff('s', start_time, expected_end_time) / (24 * 3600))) * price_in_usd), 2)
+                end
         end as mrr_in_usd,
         takehome_percentage,
 

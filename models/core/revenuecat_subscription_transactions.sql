@@ -2,10 +2,21 @@
   config(
     materialized = 'incremental',
     unique_key = 'transaction_row_id',
+    merge_update_columns = ['valid_to'],
     )
 }}
 
-with
+with 
+{% if is_incremental() %} 
+merge_identifiers as (
+  select distinct store_transaction_id 
+        from {{ source('revenuecat', 'transactions') }}
+        where regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz > (
+            select max(_exported_at) 
+            from {{ this }}
+        )
+),
+{% endif %}
 
 source as (
     select 
@@ -17,8 +28,11 @@ source as (
         {% if var('revenuecat_filter') %}
         and {{ var('revenuecat_filter') }}
         {% endif %}
-        {% if is_incremental() %}
-        and regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz > (select max(_exported_at) from {{ this }})
+        {% if is_incremental() %} 
+        and store_transaction_id in (
+                select store_transaction_id 
+                from merge_identifiers
+        )
         {% endif %}
 
 ),

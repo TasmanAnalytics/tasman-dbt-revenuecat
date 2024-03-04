@@ -22,7 +22,7 @@ source as (
     select 
         * 
     from 
-        {{ source('revenuecat', 'transactions') }} src
+        {{ source('revenuecat', 'transactions') }}
 
     where 1=1
         {% if var('revenuecat_filter') %}

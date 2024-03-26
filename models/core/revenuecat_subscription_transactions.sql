@@ -140,10 +140,12 @@ renamed as (
         purchase_price_in_purchased_currency,
         product_display_name,
         product_duration,
-        --offer,
-        --offer_type,
-        --first_seen_time,
-        --auto_resume_time,
+        {%- if var('revenuecat_version') > 4 %}
+        offer,
+        offer_type,
+        first_seen_time,
+        auto_resume_time,
+        {%- endif %}
 
         {%- if var('revenuecat_custom_subscriber_attributes') %}
             {%- for key, value in var('revenuecat_custom_subscriber_attributes').items() %}

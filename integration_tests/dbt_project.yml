@@ -14,6 +14,7 @@ log-path: "logs"
 vars:
   tasman_dbt_revenuecat:
     revenuecat_table: "SEED_REVENUECAT_TRANSACTIONS_MOCKED"
+    revenuecat_version: 5
     revenuecat_filter: "is_sandbox = false"
     revenuecat_custom_subscriber_attributes: ""
     revenuecat_mrr_test_seed: ""

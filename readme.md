@@ -22,6 +22,7 @@ vars:
     revenuecat_database: "source_db"
     revenuecat_schema: 'revenuecat'
     revenuecat_table: "data_export"
+    revenuecat_verson: 5
     revenuecat_filter: "is_sandbox = false"
     revenuecat_custom_subscriber_attributes: {'my_value::text': 'my_column_name'}
 ```

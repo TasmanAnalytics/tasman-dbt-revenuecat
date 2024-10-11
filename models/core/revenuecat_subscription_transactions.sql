@@ -40,13 +40,13 @@ source as (
 deduplicate as (
     select * from source
     qualify
-        row_number() over (partition by store_transaction_id, updated_at order by regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz desc) = 1
+        row_number() over (partition by store_transaction_id, date_trunc('microsecond', updated_at::timestamp_ntz)::string order by regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz desc) = 1
 ),
 
 renamed as (
 
     select
-        {{ tasman_dbt_revenuecat.generate_surrogate_key(['store_transaction_id', 'updated_at'])}} as transaction_row_id,
+        {{ tasman_dbt_revenuecat.generate_surrogate_key(["store_transaction_id", "date_trunc('microsecond', updated_at::timestamp_ntz)::string"])}} as transaction_row_id,
         rc_original_app_user_id,
         rc_last_seen_app_user_id_alias,
         country as country_code,
@@ -153,8 +153,8 @@ renamed as (
             {%- endfor %}
         {%- endif %}
 
-        updated_at as valid_from,
-        lead(updated_at) over (partition by store_transaction_id order by updated_at) as valid_to,
+        date_trunc('microsecond', updated_at::timestamp_ntz)::string::timestamp_ntz as valid_from,
+        lead(date_trunc('microsecond', updated_at::timestamp_ntz)::string::timestamp_ntz) over (partition by store_transaction_id order by date_trunc('microsecond', updated_at::timestamp_ntz)::string::timestamp_ntz) as valid_to,
         regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz as _exported_at
 
     from deduplicate

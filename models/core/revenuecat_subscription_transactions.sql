@@ -126,10 +126,7 @@ renamed as (
         platform,
         tax_percentage,
         commission_percentage,
-        case
-            when grace_period_end_time is not null then grace_period_end_time::timestamp_ntz
-            else effective_end_time::timestamp_ntz
-        end as effective_end_time,
+        effective_end_time::timestamp_ntz as effective_end_time,
         grace_period_end_time::timestamp_ntz as grace_period_end_time,
         grace_period_end_time is not null as is_grace_period,
         ownership_type,

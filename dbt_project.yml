@@ -12,3 +12,6 @@ models:
   tasman_dbt_revenuecat:
     +materialized: table
     +schema: revenuecat
+
+vars:
+  adapter_type: "{{ target.type }}"

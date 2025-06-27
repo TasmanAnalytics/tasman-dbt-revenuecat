@@ -25,7 +25,7 @@ unpivoted_transactions as (
 activities as (
 
     select
-        * exclude (timestamp_type),
+        {{ select_star_exclude('unpivoted_transactions', ['timestamp_type']) }},
         case
             when lower(timestamp_type) = 'start_time' then 'subscription_started'
             when lower(timestamp_type) = 'refunded_at' then 'subscription_refunded'
@@ -36,8 +36,7 @@ activities as (
             else timestamp_type
         end as activity
 
-    from
-        unpivoted_transactions
+    from unpivoted_transactions
 
 ),
 
@@ -45,9 +44,7 @@ final as (
     select
         {{ tasman_dbt_revenuecat.generate_surrogate_key(['store_transaction_id', 'activity_timestamp', 'activity'])}} as activity_row_id,
         *
-    from
-        activities
-        
+    from activities
 )
 
 select * from final

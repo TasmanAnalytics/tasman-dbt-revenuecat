@@ -21,18 +21,11 @@ date_spine as (
 ),
 
 flattened_dimensions as (
-
-    select
-        subscription_products.product_identifier,
-        subscription_products.first_subscribed_at,
-        subscription_products.latest_effective_end_time,
-        flattened_country_codes.value::text as country_code,
-        flattened_platforms.value::text as platform
-    from
-        subscription_products,
-        lateral flatten(input => country_codes) as flattened_country_codes,
-        lateral flatten(input => platforms) as flattened_platforms
-
+    {{ tasman_dbt_revenuecat.flatten_arrays(
+        relation='subscription_products',
+        array_columns=['country_codes', 'platforms'],
+        value_columns=['country_code', 'platform']
+    ) }}
 ),
 
 date_spine_dimensions as (
@@ -48,15 +41,15 @@ date_spine_dimensions as (
         flattened_dimensions
     
     where 
-        date_spine.date_day >= flattened_dimensions.first_subscribed_at::date 
-        and date_spine.date_day <= flattened_dimensions.latest_effective_end_time::date
+        date_spine.date_day >= cast(flattened_dimensions.first_subscribed_at as date)
+        and date_spine.date_day <= cast(flattened_dimensions.latest_effective_end_time as date)
 
 ),
 
 new_subscribers as (
 
     select
-        activity_timestamp::date as subscription_started_date,
+        cast(activity_timestamp as date) as subscription_started_date,
         country_code,
         platform,
         product_identifier,
@@ -71,7 +64,6 @@ new_subscribers as (
 
     where
         activity = 'subscription_started'
-        and subscription_type is not null
 
 ),
 
@@ -112,6 +104,7 @@ daily_new_subscriptions as (
         and date_spine_dimensions.country_code = new_subscribers.country_code
         and date_spine_dimensions.platform = new_subscribers.platform
         and date_spine_dimensions.product_identifier = new_subscribers.product_identifier
+        and new_subscribers.subscription_type is not null
 
     group by
         date_spine_dimensions.date_day,
@@ -140,7 +133,7 @@ daily_subscriptions_state as (
 
     left join
         subscription_states
-        on date_spine_dimensions.date_day = subscription_states.valid_from::date
+        on date_spine_dimensions.date_day = cast(subscription_states.valid_from as date)
         and date_spine_dimensions.country_code = subscription_states.country_code
         and date_spine_dimensions.platform = subscription_states.platform
 

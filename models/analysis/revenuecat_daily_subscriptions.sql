@@ -29,8 +29,8 @@ final as (
 
     left join
         subscription_transactions
-        on subscription_transactions.effective_end_time::date > date_spine.date_day
-        and subscription_transactions.start_time::date <= date_spine.date_day
+        on cast(subscription_transactions.effective_end_time as date) > date_spine.date_day
+        and cast(subscription_transactions.start_time as date) <= date_spine.date_day
 
     group by
         date_spine.date_day,

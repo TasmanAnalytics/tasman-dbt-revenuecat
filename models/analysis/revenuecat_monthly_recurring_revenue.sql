@@ -6,7 +6,7 @@ subscription_transactions as (
         valid_to is null 
         and is_trial_period = false 
         and ownership_type != 'FAMILY_SHARED' 
-        and datediff('s', start_time, expected_end_time)::float > 0 
+        and {{ dbt.datediff('start_time', 'expected_end_time', 'second') }} > 0 
         and store != 'promotional'
 ), 
 
@@ -50,13 +50,12 @@ final as (
 
     left join
         transaction_monthly_revenue
-        on transaction_monthly_revenue.start_time::date <= last_day(date_month, month)
+        on cast(transaction_monthly_revenue.start_time as date) <= last_day(date_month, month)
         and case 
-                when transaction_monthly_revenue.effective_end_time >= convert_timezone('America/Los_Angeles', 'UTC', convert_timezone('UTC', current_timestamp)::date) -- Assumes that RevenueCat runs their data model at this time. This gives an 99.9% accurate MRR number for the current month & prior months
-                then transaction_monthly_revenue.effective_end_time::date > date_spine.date_month
-                else transaction_monthly_revenue.effective_end_time::date > last_day(date_spine.date_month, month)
+                when transaction_monthly_revenue.effective_end_time >= {{ tasman_dbt_revenuecat.current_pacific_timestamp() }}
+                then cast(transaction_monthly_revenue.effective_end_time as date) > date_spine.date_month
+                else cast(transaction_monthly_revenue.effective_end_time as date) > last_day(date_spine.date_month, month)
             end
-
 
     group by
         date_spine.date_month,

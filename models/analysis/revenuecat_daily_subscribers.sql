@@ -22,8 +22,8 @@ final as (
         date_spine
 
     left join subscription_entitlements
-        on subscription_entitlements.valid_from::date <= date_spine.date_day and
-            (subscription_entitlements.valid_to::date >= date_spine.date_day or subscription_entitlements.valid_to is null)
+        on cast(subscription_entitlements.valid_from as date) <= date_spine.date_day and
+            (cast(subscription_entitlements.valid_to as date) >= date_spine.date_day or subscription_entitlements.valid_to is null)
 
     where
         subscription_status <> 'expired'

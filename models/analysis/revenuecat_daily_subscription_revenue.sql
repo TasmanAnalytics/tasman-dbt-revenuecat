@@ -16,7 +16,7 @@ date_spine as (
 final as (
 
     select
-        start_time::date as date_day,
+        cast(start_time as date) as date_day,
         country_code,
         platform,
         product_identifier,

@@ -21,6 +21,7 @@ transaction_monthly_revenue as (
         country_code,
         platform,
         product_identifier,
+        rc_last_seen_app_user_id_alias,
         start_time,
         effective_end_time,
         mrr_in_usd
@@ -37,12 +38,14 @@ final as (
             'date_spine.date_month',
             'transaction_monthly_revenue.country_code',
             'transaction_monthly_revenue.platform',
-            'transaction_monthly_revenue.product_identifier'
+            'transaction_monthly_revenue.product_identifier',
+            'transaction_monthly_revenue.rc_last_seen_app_user_id_alias'
         ])}} as row_id,
         date_spine.date_month,
         transaction_monthly_revenue.country_code,
         transaction_monthly_revenue.platform,
         transaction_monthly_revenue.product_identifier,
+        transaction_monthly_revenue.rc_last_seen_app_user_id_alias,
         sum(transaction_monthly_revenue.mrr_in_usd) as mrr_in_usd
 
     from
@@ -61,7 +64,8 @@ final as (
         date_spine.date_month,
         transaction_monthly_revenue.country_code,
         transaction_monthly_revenue.platform,
-        transaction_monthly_revenue.product_identifier
+        transaction_monthly_revenue.product_identifier,
+        transaction_monthly_revenue.rc_last_seen_app_user_id_alias
 
 )
 

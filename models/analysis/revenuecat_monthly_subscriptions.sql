@@ -29,8 +29,8 @@ final as (
 
     left join
         subscription_transactions
-        on last_day(date_spine.date_month, month) >= subscription_transactions.start_time::date
-        and last_day(date_spine.date_month, month) < subscription_transactions.effective_end_time::date
+        on last_day(date_spine.date_month, month) >= cast(subscription_transactions.start_time as date)
+        and last_day(date_spine.date_month, month) < cast(subscription_transactions.effective_end_time as date)
 
     group by
         date_spine.date_month,

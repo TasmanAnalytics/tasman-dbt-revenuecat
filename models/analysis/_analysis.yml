@@ -245,6 +245,48 @@ models:
         data_type: varchar
         description: 'The product identifier that was purchased.'
 
+  - name: revenuecat_user_monthly_recurring_revenue
+    description: 'One row per month, per country, per platform, product and app user id alias to show the monthly recurring revenue with the user grain.'
+    columns:
+      - name: row_id
+        data_type: string
+        description: 'Unique identifier determined from combination of month, country, platform, product and app user id alias.'
+        tests:
+          - unique
+          - not_null
+
+      - name: country_code
+        data_type: varchar
+        description: 'The 2-letter country code of the subscriber. e.g. US, GB.'
+
+      - name: date_month
+        data_type: timestamp_ntz
+        description: 'The month that the point in time reporting takes place in.'
+
+      - name: mrr_in_usd
+        data_type: number
+        description: 'The monthly recurring revenue.'
+        tests:
+          - test_compare_to_source:
+              enabled: "{{ true if var('revenuecat_mrr_test_seed') != '' else false }}"
+              date_field: date_month
+              source_model: "{{ var('revenuecat_mrr_test_seed') }}"
+              source_date: report_date
+              source_metric: mrr
+              percent_mismatch_threshold: "{{ var('revenuecat_mrr_test_threshold', 1) }}"
+
+      - name: platform
+        data_type: varchar
+        description: 'The last seen platform of the subscriber. e.g. android, iOS.'
+
+      - name: product_identifier
+        data_type: varchar
+        description: 'The product identifier that was purchased.'
+
+      - name: rc_last_seen_app_user_id_alias
+        data_type: varchar
+        description: 'The last seen app user id alias of the subscriber.'
+
   - name: revenuecat_monthly_subscriptions
     description: 'One row per month, per country, per platform and product to show the numbers of active subscriptions on that last day of the month.'
     columns:

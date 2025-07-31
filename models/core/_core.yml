@@ -118,8 +118,7 @@ models:
 
       - name: ownership_type
         data_type: varchar
-        description: 'Will be PURCHASED when a recorded transaction results from the subscriber’s direct purchase of it, or FAMILY_SHARED when a recorded transaction results from the subscriber having received
-          it through Family Sharing.'
+        description: "Will be PURCHASED when a recorded transaction results from the subscriber's direct purchase of it, or FAMILY_SHARED when a recorded transaction results from the subscriber having received it through Family Sharing."
 
       - name: platform
         data_type: varchar
@@ -152,6 +151,9 @@ models:
       - name: product_duration
         data_type: varchar
         description: 'The standard duration of the product. e.g. P1M(monthly), P1Y(yearly).'
+        tests:
+          - accepted_values:
+              values: ['P3D', 'P7D', 'P1W', 'P2W', 'P4W', 'P1M', 'P2M', 'P3M', 'P6M', 'P12M', 'P1Y']
 
       - name: product_identifier
         data_type: varchar
@@ -345,8 +347,7 @@ models:
 
       - name: ownership_type
         data_type: varchar
-        description: 'Will be PURCHASED when a recorded transaction results from the subscriber’s direct purchase of it, or FAMILY_SHARED when a recorded transaction results from the subscriber having received
-          it through Family Sharing.'
+        description: "Will be PURCHASED when a recorded transaction results from the subscriber's direct purchase of it, or FAMILY_SHARED when a recorded transaction results from the subscriber having received it through Family Sharing."
 
       - name: platform
         data_type: varchar
@@ -563,7 +564,7 @@ models:
         description: 'The standard duration of the product. e.g. P1M(monthly), P1Y(yearly).'
         tests:
           - accepted_values:
-              values: ['P1Y', 'P1M', 'P1W']
+              values: ['P3D', 'P7D', 'P1W', 'P2W', 'P4W', 'P1M', 'P2M', 'P3M', 'P6M', 'P12M', 'P1Y']
 
       - name: product_identifier
         data_type: varchar

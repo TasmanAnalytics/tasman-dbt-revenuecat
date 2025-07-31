@@ -31,7 +31,7 @@ valid_periods as (
 
     select
         *,
-        timestampdiff(hours, valid_from, valid_to) as valid_period
+        {{ dbt.datediff('valid_from', 'valid_to', 'hour') }} as valid_period
     from
         entitlements
 
@@ -44,8 +44,7 @@ previous_products as (
         case
             when activity = 'subscription_started'
                 then lag(product_identifier) over (partition by rc_last_seen_app_user_id_alias order by valid_from)
-        end as previous_product,
-        product_identifier <> previous_product as is_product_changed
+        end as previous_product
 
     from
         valid_periods
@@ -56,6 +55,7 @@ subscription_states as (
 
     select
         *,
+        product_identifier <> previous_product as is_product_changed,
         case
             when activity = 'subscription_started' and is_trial_period then 'active_trial'
             when activity = 'subscription_started' and not (is_trial_period) then 'active'

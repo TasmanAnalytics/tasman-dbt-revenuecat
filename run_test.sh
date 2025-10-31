@@ -23,6 +23,10 @@ dbt debug --target snowflake-ci
 echo -e "\n${BLUE}dbt deps${END}"
 dbt deps --target snowflake-ci || exit 1
 
+# need to `seed` separately since the lineage is dynamic
+echo -e "\n${BLUE}dbt seed${END}"
+dbt seed --target snowflake-ci || exit 1
+
 # build will seed, run, and test
 echo -e "\n${BLUE}dbt build (full refresh)${END}"
 dbt build --target snowflake-ci --full-refresh || exit 1

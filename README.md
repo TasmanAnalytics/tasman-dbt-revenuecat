@@ -30,6 +30,24 @@ vars:
 ## Supported Data Warehouses
 This package currently only supports Snowflake.
 
+## Contributing
+
+### Integration tests
+
+Configure your credentials by making a copy of the `.env.example` file called `.env` and fill in the required values.
+
+If you're using `direnv`, run `direnv allow` to automatically load the environment variables; otherwise load them manually, for example:
+
+```shell
+set -a; source .env; set +a
+```
+
+Run the integration tests with:
+
+```shell
+make integration_tests
+```
+
 ## Contact
 This package has been written and is maintained by [Tasman Analytics](https://tasman.ai).
 

@@ -1,11 +1,13 @@
-name: 'tasman_dbt_revenuecat_integration_tests'
-version: '1.0'
+# yaml-language-server: $schema=https://raw.githubusercontent.com/dbt-labs/dbt-jsonschema/main/schemas/latest/dbt_project-latest.json
+---
+name: tasman_dbt_revenuecat_integration_tests
+version: "0.0.0"
 
 config-version: 2
 
-profile: 'tasman_integration_tests'
+profile: tasman_integration_tests
 
-seed-paths: ["data"]
+seed-paths: ["seeds"]
 macro-paths: ["macros"]
 target-path: "target"
 clean-targets: ["target", "dbt_modules", "dbt_packages"]

@@ -1,17 +1,13 @@
 #!make
-.PHONY: help poetry dbt integration_tests
-.DEFAULT_GOAL := help
+.PHONY: setup integration_tests
 
 # Initialisation recipes
-poetry: ## Install poetry
-	@if ! command -v poetry; then\
-		curl -sSL https://install.python-poetry.org | python3 -;\
+setup: ## Install uv
+	@if ! command -v uv; then \
+		echo "Installing uv..."; \
+		curl -LsSf https://astral.sh/uv/install.sh | sh; \
 	fi
-	poetry install --directory ../
-
-# dbt Development recipes
-dbt: poetry ## Start a dbt shell
-	export DBT_PROFILES_DIR=~/.dbt/ && export SHELL=/bin/zsh && poetry shell
+	uv sync
 
 integration_tests: ## Run integration tests
-	./run_test.sh
+	uv run ./run_test.sh

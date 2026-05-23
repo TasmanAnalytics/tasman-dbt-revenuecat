@@ -1,14 +1,14 @@
 with
 
 subscription_transactions as (
-    select * from {{ ref('revenuecat_subscription_transactions') }} 
-    where 
-        valid_to is null 
-        and is_trial_period = false 
-        and ownership_type != 'FAMILY_SHARED' 
-        and datediff('s', start_time, expected_end_time)::float > 0 
+    select * from {{ ref('revenuecat_subscription_transactions') }}
+    where
+        valid_to is null
+        and is_trial_period = false
+        and ownership_type != 'FAMILY_SHARED'
+        and datediff('s', start_time, expected_end_time)::float > 0
         and store != 'promotional'
-), 
+),
 
 date_spine as (
     select distinct date_month from {{ ref('revenuecat_date_spine') }}
@@ -51,7 +51,7 @@ final as (
     left join
         transaction_monthly_revenue
         on transaction_monthly_revenue.start_time::date <= last_day(date_month, month)
-        and case 
+        and case
                 when transaction_monthly_revenue.effective_end_time >= convert_timezone('America/Los_Angeles', 'UTC', convert_timezone('UTC', current_timestamp)::date) -- Assumes that RevenueCat runs their data model at this time. This gives an 99.9% accurate MRR number for the current month & prior months
                 then transaction_monthly_revenue.effective_end_time::date > date_spine.date_month
                 else transaction_monthly_revenue.effective_end_time::date > last_day(date_spine.date_month, month)

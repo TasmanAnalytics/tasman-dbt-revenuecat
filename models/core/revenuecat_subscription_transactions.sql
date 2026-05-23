@@ -6,31 +6,31 @@
     )
 }}
 
-with 
-{% if is_incremental() %} 
+with
+{% if is_incremental() %}
 merge_identifiers as (
-  select distinct store_transaction_id 
+  select distinct store_transaction_id
         from {{ source('revenuecat', 'transactions') }}
         where regexp_substr(_file_name, '[0-9]{10}')::timestamp_ntz > (
-            select max(_exported_at) 
+            select max(_exported_at)
             from {{ this }}
         )
 ),
 {% endif %}
 
 source as (
-    select 
-        * 
-    from 
+    select
+        *
+    from
         {{ source('revenuecat', 'transactions') }}
 
     where 1=1
         {% if var('revenuecat_filter') %}
         and {{ var('revenuecat_filter') }}
         {% endif %}
-        {% if is_incremental() %} 
+        {% if is_incremental() %}
         and store_transaction_id in (
-                select store_transaction_id 
+                select store_transaction_id
                 from merge_identifiers
         )
         {% endif %}
@@ -64,12 +64,12 @@ renamed as (
         price_in_usd * tax_percentage as estimated_tax_in_usd,
         price_in_usd - commission_in_usd - estimated_tax_in_usd as proceeds_in_usd,
         -- Documentation for normalizing mrr_in_usd: https://docs.revenuecat.com/docs/monthly-recurring-revenue-mrr_in_usd-chart
-		case 
+		case
             when effective_end_time is not null then
-                case 
+                case
                     /* handle cases where product_duration cannot be used for the transaction first */
-                    when (is_in_intro_offer_period = 'true' or product_duration is null) 
-                        then 
+                    when (is_in_intro_offer_period = 'true' or product_duration is null)
+                        then
                             case
                                 when datediff(day, start_time, expected_end_time) between 0 and 1 then round(30 * price_in_usd, 2)
                                 when datediff(day, start_time, expected_end_time) = 3 then round(10 * price_in_usd, 2)
@@ -114,12 +114,12 @@ renamed as (
         price_in_purchased_currency * commission_percentage as commission_in_purchased_currency,
         price_in_purchased_currency * tax_percentage as estimated_tax_in_purchased_currency,
         price_in_purchased_currency - commission_in_purchased_currency - estimated_tax_in_purchased_currency as proceeds_in_purchased_currency,
-        
+
         entitlement_identifiers,
         renewal_number,
         is_trial_conversion::boolean as is_trial_conversion,
         store_transaction_id = original_store_transaction_id or is_trial_conversion::boolean as is_new_revenue,
-        
+
         presented_offering,
         reserved_subscriber_attributes,
         custom_subscriber_attributes,

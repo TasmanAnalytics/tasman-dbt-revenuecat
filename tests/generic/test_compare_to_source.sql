@@ -30,7 +30,7 @@ comparison as (
             when src.measure_src != 0 then abs(round((div0(new_model.measure_comparison, src.measure_src) - 1), 3)) <= ( {{  percent_mismatch_threshold  }} / 100.0 )
         else false
         end as is_match
-    from 
+    from
         src
             left join new_model
                 on src.date = new_model.date

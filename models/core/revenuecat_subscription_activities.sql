@@ -47,7 +47,7 @@ final as (
         *
     from
         activities
-        
+
 )
 
 select * from final

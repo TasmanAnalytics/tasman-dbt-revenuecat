@@ -46,9 +46,9 @@ date_spine_dimensions as (
     from
         date_spine,
         flattened_dimensions
-    
-    where 
-        date_spine.date_day >= flattened_dimensions.first_subscribed_at::date 
+
+    where
+        date_spine.date_day >= flattened_dimensions.first_subscribed_at::date
         and date_spine.date_day <= flattened_dimensions.latest_effective_end_time::date
 
 ),

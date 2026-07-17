@@ -32,6 +32,8 @@ This package currently only supports Snowflake.
 
 ## Contributing
 
+Install dependencies and pre-commit hooks with `make setup`. Run `make help` to see the other available commands.
+
 ### Integration tests
 
 Configure your credentials by making a copy of the `.env.example` file called `.env` and fill in the required values.

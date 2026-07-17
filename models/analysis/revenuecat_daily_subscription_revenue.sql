@@ -26,10 +26,10 @@ final as (
         sum(commission_in_usd) as commission_in_usd,
         sum(estimated_tax_in_usd) as estimated_tax_in_usd,
         sum(proceeds_in_usd) as proceeds_in_usd
-    
+
     from
         subscription_transactions
-    
+
     group by
         date_day,
         country_code,
